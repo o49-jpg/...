@@ -877,6 +877,11 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
+-- Initialize global connections table if it doesn't exist
+if not _G.ShadowConnections then
+    _G.ShadowConnections = {}
+end
+
 -- Add cleanup to global connections
 table.insert(_G.ShadowConnections, {
     Name = "NetworkSystemCleanup",
