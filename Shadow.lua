@@ -1,6 +1,3 @@
--- Shadow the Hedgehog - Complete Chaos Arsenal with Acrobatics
--- Executor Compatible
-
 -- Loading Notification System
 local function showLoadingNotification()
     local notifications = game:GetService("CoreGui"):FindFirstChild("ShadowNotifications")
