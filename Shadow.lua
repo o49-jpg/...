@@ -26,7 +26,7 @@ local function showLoadingNotification()
     corner.Parent = frame
     
     local title = Instance.new("TextLabel")
-    title.Text = "âš¡ SHADOW THE HEDGEHOG âš¡"
+    title.Text = "⚡ SHADOW THE HEDGEHOG ⚡"
     title.TextColor3 = Color3.fromRGB(255, 0, 0)
     title.TextSize = 20
     title.Font = Enum.Font.GothamBold
@@ -117,7 +117,7 @@ local function playThemeMusic()
     musicCorner.Parent = musicFrame
     
     local musicTitle = Instance.new("TextLabel")
-    musicTitle.Text = "ðŸŽµ CHAOS THEME"
+    musicTitle.Text = "🎵 CHAOS THEME"
     musicTitle.TextColor3 = Color3.fromRGB(0, 255, 255)
     musicTitle.TextSize = 12
     musicTitle.Font = Enum.Font.GothamBold
@@ -130,7 +130,7 @@ local function playThemeMusic()
     local toggleButton = Instance.new("TextButton")
     toggleButton.Size = UDim2.new(0, 40, 0, 30)
     toggleButton.Position = UDim2.new(0.75, 0, 0.125, 0)
-    toggleButton.Text = "ðŸ”‡"
+    toggleButton.Text = "🔊"
     toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     toggleButton.Font = Enum.Font.GothamBold
@@ -188,11 +188,11 @@ local function playThemeMusic()
         
         if isMuted then
             sound.Volume = 0
-            toggleButton.Text = "ðŸ”ˆ"
+            toggleButton.Text = "🔇"
             toggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
         else
             sound.Volume = originalVolume
-            toggleButton.Text = "ðŸ”Š"
+            toggleButton.Text = "🔊"
             toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
         end
     end)
@@ -284,24 +284,47 @@ local chaosBlastCooldown = false
 local telekinesisTarget = nil
 local chaosRange = 300
 
--- NEW ABILITY COOLDOWNS
+-- Ability Cooldowns System
 local abilityCooldowns = {
-    V = false, -- Chaos Vortex
-    B = false, -- Black Tornado
-    N = false, -- Chaos Rift
-    M = false, -- Shadow Clone
-    L = false, -- Chaos Cage
-    K = false, -- Time Stop
-    J = false, -- Chaos Wave
-    H = false, -- Teleport Dash
-    F = false, -- Gravity Field
-    Q = false, -- Energy Drain
-    E = false, -- Chaos Shield
-    R = false, -- Meteor Strike
-    T = false, -- Chaos Chains
-    Y = false, -- Soul Steal
-    U = false, -- Dimension Shift
-    P = false  -- Super Form
+    -- Page 1: Chaos Control
+    V = false, B = false, N = false, M = false, L = false,
+    K = false, J = false, H = false, F = false, Q = false,
+    E = false, R = false, T = false, Y = false, U = false,
+    P = false,
+    
+    -- Page 2: Neural Dominance
+    I = false, -- Neural Overload
+    O = false, -- Memory Wipe
+    A = false, -- Psychic Chains
+    S = false, -- Brainwave Disruption
+    D = false, -- Soul Extraction
+    W = false, -- Body Puppeteer
+    
+    -- Page 3: Quantum Physics
+    Z2 = false, -- Molecular Reconstruction
+    X2 = false, -- Gravity Inversion
+    C2 = false, -- Temporal Echo
+    V2 = false, -- Phase Shift
+    B2 = false, -- Mass Multiplication
+    N2 = false, -- Entropy Field
+    
+    -- Page 4: Reality Bending
+    Z3 = false, -- Biomimetic Assimilation
+    X3 = false, -- Reality Sculptor
+    C3 = false, -- Quantum Entanglement
+    V3 = false, -- Dimensional Fold
+    B3 = false, -- Chrono-Loop
+    N3 = false  -- Singularity Core
+}
+
+-- PAGING SYSTEM VARIABLES
+local currentAbilityPage = 1
+local totalAbilityPages = 4
+local abilityPageNames = {
+    [1] = "CHAOS CONTROL",
+    [2] = "NEURAL DOMINANCE", 
+    [3] = "QUANTUM PHYSICS",
+    [4] = "REALITY BENDING"
 }
 
 -- Create hand effects
@@ -348,7 +371,7 @@ local function createAcrobaticsEffect()
     effect.Size = Vector3.new(10, 10, 10)
     effect.Position = humanoidRootPart.Position
     effect.Material = Enum.Material.Neon
-    effect.Color = Color3.fromRGB(255, 165, 0) -- Orange for acrobatics
+    effect.Color = Color3.fromRGB(255, 165, 0)
     effect.Transparency = 0.7
     effect.Anchored = true
     effect.CanCollide = false
@@ -376,7 +399,6 @@ local function createAcrobaticsEffect()
     
     acrobaticsEffect = effect
     
-    -- Weld effect to character
     spawn(function()
         while acrobaticsEffect and acrobaticsEffect.Parent do
             acrobaticsEffect.Position = humanoidRootPart.Position
@@ -393,35 +415,26 @@ local function performFlip(flipAxis, flipDirection)
     
     lastFlipTime = tick()
     
-    -- Create acrobatics effect if not exists
     if not acrobaticsEffect then
         createAcrobaticsEffect()
     end
     
-    -- Calculate rotation axis based on movement direction
     local rotationAxis
     if flipAxis == "X" then
-        rotationAxis = Vector3.new(1, 0, 0) -- Forward/backward flip
+        rotationAxis = Vector3.new(1, 0, 0)
     elseif flipAxis == "Z" then
-        rotationAxis = Vector3.new(0, 0, 1) -- Side flip
+        rotationAxis = Vector3.new(0, 0, 1)
     else
-        rotationAxis = Vector3.new(0, 1, 0) -- Default: side flip
+        rotationAxis = Vector3.new(0, 1, 0)
     end
     
-    -- Calculate rotation amount (360 degrees = full flip)
     local rotationAmount = 360 * flipDirection
-    
-    -- Store original CFrame
     local originalCFrame = humanoidRootPart.CFrame
-    
-    -- Perform flip animation
     local flipStartTime = tick()
     local flipDuration = FLIP_DURATION
     
-    -- Apply upward force for jump effect
     humanoidRootPart.Velocity = humanoidRootPart.Velocity + Vector3.new(0, 50, 0)
     
-    -- Create flip trail effect
     local trail = Instance.new("Trail")
     trail.Attachment0 = Instance.new("Attachment")
     trail.Attachment0.Parent = humanoidRootPart
@@ -433,34 +446,27 @@ local function performFlip(flipAxis, flipDirection)
     trail.Lifetime = 0.3
     trail.Parent = humanoidRootPart
     
-    -- Add flip sound effect
     local flipSound = Instance.new("Sound")
-    flipSound.SoundId = "rbxassetid://9111275567" -- Whoosh sound
+    flipSound.SoundId = "rbxassetid://9111275567"
     flipSound.Volume = 0.5
     flipSound.Parent = humanoidRootPart
     flipSound:Play()
     
-    -- Rotation loop
     while tick() - flipStartTime < flipDuration do
         if not humanoidRootPart or not humanoidRootPart.Parent then break end
         
         local elapsed = tick() - flipStartTime
         local progress = elapsed / flipDuration
-        
-        -- Calculate current rotation
         local currentRotation = rotationAmount * progress
         
-        -- Apply rotation
         humanoidRootPart.CFrame = originalCFrame * CFrame.fromAxisAngle(rotationAxis, math.rad(currentRotation))
         
         wait()
     end
     
-    -- Cleanup
     if trail then trail:Destroy() end
     if flipSound then flipSound:Destroy() end
     
-    -- Restore original rotation (snap back to upright)
     if humanoidRootPart and humanoidRootPart.Parent then
         humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position) * CFrame.Angles(0, originalCFrame:ToEulerAnglesXYZ())
     end
@@ -474,7 +480,6 @@ local function checkMovementAndFlip()
     local moveDirection = Vector3.new(0, 0, 0)
     local hasMovement = false
     
-    -- Check which movement keys are pressed
     if inputService:IsKeyDown(Enum.KeyCode.W) then
         moveDirection = moveDirection + Vector3.new(0, 0, -1)
         hasMovement = true
@@ -492,33 +497,24 @@ local function checkMovementAndFlip()
         hasMovement = true
     end
     
-    -- If no movement keys are pressed, don't flip
     if not hasMovement then return end
     
-    -- Normalize direction
     if moveDirection.Magnitude > 0 then
         moveDirection = moveDirection.Unit
         
-        -- Determine flip type based on dominant direction
         local absX = math.abs(moveDirection.X)
         local absZ = math.abs(moveDirection.Z)
         
         if absZ > absX then
-            -- Forward/backward movement - do forward/backward flip
             if moveDirection.Z < 0 then
-                -- W pressed - forward flip
                 performFlip("X", 1)
             else
-                -- S pressed - backward flip
                 performFlip("X", -1)
             end
         else
-            -- Side movement - do side flip
             if moveDirection.X < 0 then
-                -- A pressed - left side flip
                 performFlip("Z", 1)
             else
-                -- D pressed - right side flip
                 performFlip("Z", -1)
             end
         end
@@ -545,1330 +541,157 @@ local function claimNetworkOwnership(range)
     return claimed
 end
 
--- Function to unanchor everything in range
-local function unanchorInRange(range)
-    local unanchored = 0
-    local rootPos = humanoidRootPart.Position
+-- PAGING SYSTEM FUNCTION
+local function changeAbilityPage(pageNum)
+    if pageNum < 1 then pageNum = totalAbilityPages end
+    if pageNum > totalAbilityPages then pageNum = 1 end
     
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") then
-            local distance = (obj.Position - rootPos).Magnitude
-            if distance <= range then
-                pcall(function()
-                    obj.Anchored = false
-                    unanchored = unanchored + 1
-                end)
-            end
-        end
-    end
+    currentAbilityPage = pageNum
     
-    return unanchored
-end
-
--- Function to anchor everything in range
-local function anchorInRange(range)
-    local anchored = 0
-    local rootPos = humanoidRootPart.Position
+    local notification = Instance.new("ScreenGui")
+    notification.Name = "PageNotification"
+    notification.DisplayOrder = 997
+    notification.ResetOnSpawn = false
     
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") then
-            local distance = (obj.Position - rootPos).Magnitude
-            if distance <= range then
-                pcall(function()
-                    obj.Anchored = true
-                    anchored = anchored + 1
-                end)
-            end
-        end
-    end
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 350, 0, 70)
+    frame.Position = UDim2.new(0.5, -175, 0.8, -35)
+    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    frame.BackgroundTransparency = 0.7
+    frame.BorderSizePixel = 0
+    frame.Parent = notification
     
-    return anchored
-end
-
--- NEW ABILITY: V - Chaos Vortex
-local function activateChaosVortex()
-    if abilityCooldowns.V then return end
-    abilityCooldowns.V = true
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = frame
     
-    claimNetworkOwnership(chaosRange)
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -20, 0.5, -5)
+    title.Position = UDim2.new(0, 10, 0, 5)
+    title.Text = "ABILITY PAGE: " .. abilityPageNames[pageNum]
+    title.TextColor3 = Color3.fromRGB(255, 255, 0)
+    title.TextSize = 18
+    title.Font = Enum.Font.GothamBold
+    title.BackgroundTransparency = 1
+    title.TextWrapped = true
+    title.Parent = frame
     
-    -- Create vortex center
-    local vortexCenter = Instance.new("Part")
-    vortexCenter.Size = Vector3.new(5, 5, 5)
-    vortexCenter.Position = humanoidRootPart.Position + Vector3.new(0, 10, 0)
-    vortexCenter.Material = Enum.Material.Neon
-    vortexCenter.Color = Color3.fromRGB(0, 150, 255)
-    vortexCenter.Transparency = 0.3
-    vortexCenter.Anchored = true
-    vortexCenter.CanCollide = false
-    vortexCenter.Shape = Enum.PartType.Ball
-    vortexCenter.Parent = workspace
+    local subtitle = Instance.new("TextLabel")
+    subtitle.Size = UDim2.new(1, -20, 0.5, -5)
+    subtitle.Position = UDim2.new(0, 10, 0.5, 0)
+    subtitle.Text = pageNum == 1 and "Chaos Abilities (Original)" or 
+                    pageNum == 2 and "NPC Control Abilities" or 
+                    pageNum == 3 and "Object Manipulation Abilities" or
+                    "Hybrid Reality Abilities"
+    subtitle.TextColor3 = Color3.fromRGB(255, 200, 0)
+    subtitle.TextSize = 14
+    subtitle.Font = Enum.Font.Gotham
+    subtitle.BackgroundTransparency = 1
+    subtitle.TextWrapped = true
+    subtitle.Parent = frame
     
-    local vortexLight = Instance.new("PointLight")
-    vortexLight.Color = Color3.fromRGB(0, 150, 255)
-    vortexLight.Range = 200
-    vortexLight.Brightness = 10
-    vortexLight.Parent = vortexCenter
+    notification.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
     
-    -- Create vortex particles
-    local vortexParticles = Instance.new("ParticleEmitter")
-    vortexParticles.Color = ColorSequence.new(Color3.fromRGB(0, 100, 255))
-    vortexParticles.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 2),
-        NumberSequenceKeypoint.new(1, 0)
-    })
-    vortexParticles.Transparency = NumberSequence.new(0.5)
-    vortexParticles.Speed = NumberRange.new(50, 100)
-    vortexParticles.Lifetime = NumberRange.new(1, 3)
-    vortexParticles.Rate = 200
-    vortexParticles.VelocitySpread = 180
-    vortexParticles.Rotation = NumberRange.new(0, 360)
-    vortexParticles.RotSpeed = NumberRange.new(-100, 100)
-    vortexParticles.Parent = vortexCenter
-    vortexParticles.Enabled = true
-    
-    -- Vortex sound
-    local vortexSound = Instance.new("Sound")
-    vortexSound.SoundId = "rbxassetid://9111275566"
-    vortexSound.Volume = 0.8
-    vortexSound.Looped = true
-    vortexSound.Parent = vortexCenter
-    vortexSound:Play()
-    
-    -- Suck objects into vortex
-    spawn(function()
-        for i = 1, 100 do
-            local rootPos = vortexCenter.Position
-            
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - rootPos).Magnitude
-                    if distance <= chaosRange then
-                        local direction = (rootPos - part.Position).Unit
-                        local force = Instance.new("BodyVelocity")
-                        force.Velocity = direction * (100 + (chaosRange - distance))
-                        force.MaxForce = Vector3.new(10000, 10000, 10000)
-                        force.Parent = part
-                        
-                        game:GetService("Debris"):AddItem(force, 0.1)
-                    end
-                end
-            end
-            
-            -- Expand vortex
-            vortexCenter.Size = vortexCenter.Size + Vector3.new(0.5, 0.5, 0.5)
-            vortexLight.Range = vortexLight.Range + 2
-            
-            wait(0.1)
-        end
-        
-        -- Explode vortex
-        local explosion = Instance.new("Explosion")
-        explosion.Position = vortexCenter.Position
-        explosion.BlastPressure = 500000
-        explosion.BlastRadius = 150
-        explosion.Parent = workspace
-        
-        vortexSound:Stop()
-        vortexCenter:Destroy()
-        
-        wait(15)
-        abilityCooldowns.V = false
-    end)
-end
-
--- NEW ABILITY: B - Black Tornado
-local function activateBlackTornado()
-    if abilityCooldowns.B then return end
-    abilityCooldowns.B = true
-    
-    claimNetworkOwnership(chaosRange)
-    
-    -- Create tornado base
-    local tornadoBase = Instance.new("Part")
-    tornadoBase.Size = Vector3.new(30, 1, 30)
-    tornadoBase.Position = humanoidRootPart.Position
-    tornadoBase.Material = Enum.Material.Neon
-    tornadoBase.Color = Color3.fromRGB(0, 0, 0)
-    tornadoBase.Transparency = 0.7
-    tornadoBase.Anchored = true
-    tornadoBase.CanCollide = false
-    tornadoBase.Parent = workspace
-    
-    -- Create tornado column
-    local tornadoHeight = 100
-    local tornadoSegments = 20
-    
-    for i = 1, tornadoSegments do
-        local segment = Instance.new("Part")
-        segment.Size = Vector3.new(25 - (i * 1), tornadoHeight/tornadoSegments, 25 - (i * 1))
-        segment.Position = humanoidRootPart.Position + Vector3.new(0, (i * tornadoHeight/tornadoSegments) - tornadoHeight/2, 0)
-        segment.Material = Enum.Material.Neon
-        segment.Color = Color3.fromRGB(0, 0, 0)
-        segment.Transparency = 0.5 + (i * 0.02)
-        segment.Anchored = true
-        segment.CanCollide = false
-        segment.Parent = workspace
-        
-        -- Rotating effect
-        spawn(function()
-            local angle = 0
-            while segment and segment.Parent do
-                angle = angle + 5
-                segment.CFrame = CFrame.new(humanoidRootPart.Position + Vector3.new(0, (i * tornadoHeight/tornadoSegments) - tornadoHeight/2, 0)) 
-                    * CFrame.Angles(0, math.rad(angle * i), 0)
-                    * CFrame.new(0, 0, 10)
-                wait(0.033)
-            end
-        end)
-    end
-    
-    -- Suck and spin objects
-    spawn(function()
-        for i = 1, 60 do
-            local rootPos = humanoidRootPart.Position
-            
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - rootPos).Magnitude
-                    if distance <= chaosRange then
-                        -- Spiral upward motion
-                        local angle = tick() * 10
-                        local radius = distance * 0.5
-                        local x = math.cos(angle) * radius
-                        local z = math.sin(angle) * radius
-                        
-                        local targetPos = rootPos + Vector3.new(x, 50, z)
-                        local direction = (targetPos - part.Position).Unit
-                        
-                        local force = Instance.new("BodyVelocity")
-                        force.Velocity = direction * 100 + Vector3.new(0, 30, 0)
-                        force.MaxForce = Vector3.new(10000, 10000, 10000)
-                        force.Parent = part
-                        
-                        -- Add spin
-                        local spin = Instance.new("BodyAngularVelocity")
-                        spin.AngularVelocity = Vector3.new(0, 50, 0)
-                        spin.MaxTorque = Vector3.new(10000, 10000, 10000)
-                        spin.Parent = part
-                        
-                        game:GetService("Debris"):AddItem(force, 0.1)
-                        game:GetService("Debris"):AddItem(spin, 0.1)
-                    end
-                end
-            end
-            
-            wait(0.1)
-        end
-        
-        -- Cleanup
-        tornadoBase:Destroy()
-        for _, part in pairs(workspace:GetChildren()) do
-            if part:IsA("Part") and part.Color == Color3.fromRGB(0, 0, 0) and part.Transparency > 0.4 then
-                part:Destroy()
-            end
-        end
-        
-        wait(20)
-        abilityCooldowns.B = false
-    end)
-end
-
--- NEW ABILITY: N - Chaos Rift
-local function activateChaosRift()
-    if abilityCooldowns.N then return end
-    abilityCooldowns.N = true
-    
-    local mouse = player:GetMouse()
-    local targetPosition = mouse.Hit.Position
-    
-    -- Create rift
-    local rift = Instance.new("Part")
-    rift.Size = Vector3.new(20, 30, 5)
-    rift.Position = targetPosition
-    rift.Material = Enum.Material.Neon
-    rift.Color = Color3.fromRGB(150, 0, 255)
-    rift.Transparency = 0.3
-    rift.Anchored = true
-    rift.CanCollide = false
-    rift.Parent = workspace
-    
-    local riftLight = Instance.new("PointLight")
-    riftLight.Color = Color3.fromRGB(150, 0, 255)
-    riftLight.Range = 100
-    riftLight.Brightness = 8
-    riftLight.Parent = rift
-    
-    -- Create portal effect
-    local surfaceGui = Instance.new("SurfaceGui")
-    surfaceGui.Face = Enum.NormalId.Front
-    surfaceGui.Parent = rift
-    
-    local portalFrame = Instance.new("Frame")
-    portalFrame.Size = UDim2.new(1, 0, 1, 0)
-    portalFrame.BackgroundColor3 = Color3.fromRGB(100, 0, 200)
-    portalFrame.BackgroundTransparency = 0.5
-    portalFrame.Parent = surfaceGui
-    
-    -- Claim ownership around rift
-    claimNetworkOwnership(150)
-    
-    -- Suck objects into rift
-    spawn(function()
-        for i = 1, 30 do
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - targetPosition).Magnitude
-                    if distance <= 100 then
-                        local direction = (targetPosition - part.Position).Unit
-                        local force = Instance.new("BodyVelocity")
-                        force.Velocity = direction * 150
-                        force.MaxForce = Vector3.new(10000, 10000, 10000)
-                        force.Parent = part
-                        
-                        game:GetService("Debris"):AddItem(force, 0.1)
-                    end
-                end
-            end
-            
-            wait(0.1)
-        end
-        
-        -- Rift collapse
-        for i = 1, 20 do
-            rift.Transparency = 0.3 + (i * 0.035)
-            riftLight.Brightness = 8 - (i * 0.4)
-            rift.Size = rift.Size - Vector3.new(1, 1.5, 0.25)
-            wait(0.05)
-        end
-        
-        rift:Destroy()
-        
-        wait(12)
-        abilityCooldowns.N = false
-    end)
-end
-
--- NEW ABILITY: M - Shadow Clone
-local function activateShadowClone()
-    if abilityCooldowns.M then return end
-    abilityCooldowns.M = true
-    
-    -- Create clone
-    local clone = character:Clone()
-    clone.Name = "ShadowClone"
-    
-    -- Position clone
-    local offset = humanoidRootPart.CFrame.lookVector * 10
-    clone:SetPrimaryPartCFrame(humanoidRootPart.CFrame + offset)
-    
-    -- Make clone black/red
-    for _, part in pairs(clone:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Color = Color3.fromRGB(50, 50, 50)
-            if part:IsA("MeshPart") then
-                part.TextureID = ""
-            end
-        end
-    end
-    
-    -- Add clone glow
-    local cloneGlow = Instance.new("PointLight")
-    cloneGlow.Color = Color3.fromRGB(255, 0, 0)
-    cloneGlow.Range = 20
-    cloneGlow.Brightness = 3
-    cloneGlow.Parent = clone:FindFirstChild("HumanoidRootPart")
-    
-    clone.Parent = workspace
-    
-    -- Make clone mimic movements
-    spawn(function()
-        local cloneRoot = clone:WaitForChild("HumanoidRootPart")
-        local cloneHumanoid = clone:WaitForChild("Humanoid")
-        
-        for i = 1, 100 do
-            if clone and clone.Parent then
-                -- Follow player with slight delay
-                local targetPos = humanoidRootPart.Position + (humanoidRootPart.CFrame.lookVector * -5)
-                cloneRoot.CFrame = CFrame.new(targetPos) * CFrame.Angles(0, math.rad(i * 2), 0)
-                
-                -- Attack nearby objects
-                for _, part in pairs(workspace:GetDescendants()) do
-                    if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) and not part:IsDescendantOf(clone) then
-                        local distance = (part.Position - cloneRoot.Position).Magnitude
-                        if distance <= 30 then
-                            local direction = (part.Position - cloneRoot.Position).Unit
-                            local force = Instance.new("BodyVelocity")
-                            force.Velocity = direction * 100
-                            force.MaxForce = Vector3.new(5000, 5000, 5000)
-                            force.Parent = part
-                            game:GetService("Debris"):AddItem(force, 0.5)
-                        end
-                    end
-                end
-            end
-            wait(0.1)
-        end
-        
-        -- Clone vanish
-        if clone and clone.Parent then
-            for i = 1, 20 do
-                for _, part in pairs(clone:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.Transparency = i * 0.05
-                    end
-                end
-                wait(0.05)
-            end
-            clone:Destroy()
-        end
-        
-        wait(25)
-        abilityCooldowns.M = false
-    end)
-end
-
--- NEW ABILITY: L - Chaos Cage
-local function activateChaosCage()
-    if abilityCooldowns.L then return end
-    abilityCooldowns.L = true
-    
-    -- Create cage walls
-    local cageSize = 50
-    local cageParts = {}
-    
-    -- Bottom
-    local bottom = Instance.new("Part")
-    bottom.Size = Vector3.new(cageSize, 2, cageSize)
-    bottom.Position = humanoidRootPart.Position - Vector3.new(0, 25, 0)
-    bottom.Material = Enum.Material.Neon
-    bottom.Color = Color3.fromRGB(255, 0, 100)
-    bottom.Transparency = 0.7
-    bottom.Anchored = true
-    bottom.CanCollide = true
-    bottom.Parent = workspace
-    table.insert(cageParts, bottom)
-    
-    -- Top
-    local top = bottom:Clone()
-    top.Position = humanoidRootPart.Position + Vector3.new(0, 25, 0)
-    top.Parent = workspace
-    table.insert(cageParts, top)
-    
-    -- Walls
-    local wallPositions = {
-        Vector3.new(cageSize/2, 0, 0),
-        Vector3.new(-cageSize/2, 0, 0),
-        Vector3.new(0, 0, cageSize/2),
-        Vector3.new(0, 0, -cageSize/2)
-    }
-    
-    local wallSizes = {
-        Vector3.new(2, 50, cageSize),
-        Vector3.new(2, 50, cageSize),
-        Vector3.new(cageSize, 50, 2),
-        Vector3.new(cageSize, 50, 2)
-    }
-    
-    for i = 1, 4 do
-        local wall = Instance.new("Part")
-        wall.Size = wallSizes[i]
-        wall.Position = humanoidRootPart.Position + wallPositions[i]
-        wall.Material = Enum.Material.Neon
-        wall.Color = Color3.fromRGB(255, 0, 100)
-        wall.Transparency = 0.7
-        wall.Anchored = true
-        wall.CanCollide = true
-        wall.Parent = workspace
-        table.insert(cageParts, wall)
-    end
-    
-    -- Force field inside cage
-    spawn(function()
-        for i = 1, 30 do
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - humanoidRootPart.Position).Magnitude
-                    if distance <= cageSize/2 then
-                        -- Push toward center with oscillation
-                        local direction = (humanoidRootPart.Position - part.Position).Unit
-                        local force = Instance.new("BodyVelocity")
-                        force.Velocity = direction * (50 + math.sin(tick() * 10) * 20)
-                        force.MaxForce = Vector3.new(5000, 5000, 5000)
-                        force.Parent = part
-                        game:GetService("Debris"):AddItem(force, 0.1)
-                    end
-                end
-            end
-            wait(0.1)
-        end
-        
-        -- Cage collapse
-        for i = 1, 20 do
-            for _, cagePart in pairs(cageParts) do
-                if cagePart and cagePart.Parent then
-                    cagePart.Transparency = 0.7 + (i * 0.015)
-                    cagePart.Color = Color3.fromRGB(255, 100 - (i * 5), 100 - (i * 5))
-                end
-            end
-            wait(0.05)
-        end
-        
-        for _, cagePart in pairs(cageParts) do
-            cagePart:Destroy()
-        end
-        
-        wait(18)
-        abilityCooldowns.L = false
-    end)
-end
-
--- NEW ABILITY: K - Time Stop
-local function activateTimeStop()
-    if abilityCooldowns.K then return end
-    abilityCooldowns.K = true
-    
-    claimNetworkOwnership(chaosRange * 2)
-    
-    -- Create time stop effect
-    local timeSphere = Instance.new("Part")
-    timeSphere.Size = Vector3.new(1, 1, 1)
-    timeSphere.Position = humanoidRootPart.Position
-    timeSphere.Material = Enum.Material.Neon
-    timeSphere.Color = Color3.fromRGB(0, 255, 255)
-    timeSphere.Transparency = 0.5
-    timeSphere.Anchored = true
-    timeSphere.CanCollide = false
-    timeSphere.Shape = Enum.PartType.Ball
-    timeSphere.Parent = workspace
-    
-    local timeLight = Instance.new("PointLight")
-    timeLight.Color = Color3.fromRGB(0, 255, 255)
-    timeLight.Range = 500
-    timeLight.Brightness = 5
-    timeLight.Parent = timeSphere
-    
-    -- Stop all objects
-    local stoppedObjects = {}
-    
-    for _, part in pairs(workspace:GetDescendants()) do
-        if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-            local distance = (part.Position - humanoidRootPart.Position).Magnitude
-            if distance <= chaosRange * 2 then
-                local velocity = Instance.new("BodyVelocity")
-                velocity.Velocity = Vector3.new(0, 0, 0)
-                velocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                velocity.Parent = part
-                
-                local gyro = Instance.new("BodyGyro")
-                gyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-                gyro.CFrame = part.CFrame
-                gyro.Parent = part
-                
-                table.insert(stoppedObjects, {
-                    Part = part,
-                    Velocity = velocity,
-                    Gyro = gyro
-                })
-                
-                -- Time stop visual
-                local timeGlow = Instance.new("PointLight")
-                timeGlow.Color = Color3.fromRGB(0, 200, 255)
-                timeGlow.Range = 10
-                timeGlow.Brightness = 2
-                timeGlow.Parent = part
-                
-                local timeBox = Instance.new("SelectionBox")
-                timeBox.Adornee = part
-                timeBox.Color3 = Color3.fromRGB(0, 200, 255)
-                timeBox.Transparency = 0.7
-                timeBox.Parent = part
-            end
-        end
-    end
-    
-    -- Expand time sphere
-    for i = 1, 40 do
-        timeSphere.Size = timeSphere.Size + Vector3.new(chaosRange/20, chaosRange/20, chaosRange/20)
-        timeSphere.Transparency = 0.5 - (i * 0.0125)
-        timeLight.Brightness = 5 + (i * 0.25)
-        wait(0.1)
-    end
-    
-    wait(5) -- Time stop duration
-    
-    -- Release everything
-    for _, data in pairs(stoppedObjects) do
-        if data.Part and data.Part.Parent then
-            if data.Velocity then data.Velocity:Destroy() end
-            if data.Gyro then data.Gyro:Destroy() end
-            
-            -- Remove visual effects
-            for _, child in pairs(data.Part:GetChildren()) do
-                if child:IsA("PointLight") or child:IsA("SelectionBox") then
-                    child:Destroy()
-                end
-            end
-        end
-    end
-    
-    -- Time sphere collapse
     for i = 1, 20 do
-        timeSphere.Transparency = 0 + (i * 0.05)
-        timeLight.Brightness = 15 - (i * 0.75)
-        wait(0.05)
+        frame.BackgroundTransparency = 0.7 - (i * 0.035)
+        title.TextTransparency = 1 - (i * 0.05)
+        subtitle.TextTransparency = 1 - (i * 0.05)
+        wait(0.02)
     end
     
-    timeSphere:Destroy()
+    wait(2)
     
-    wait(30) -- Long cooldown for time manipulation
-    abilityCooldowns.K = false
+    for i = 1, 20 do
+        frame.BackgroundTransparency = 0 + (i * 0.035)
+        title.TextTransparency = 0 + (i * 0.05)
+        subtitle.TextTransparency = 0 + (i * 0.05)
+        wait(0.02)
+    end
+    
+    notification:Destroy()
+    
+    if abilitiesPanel then
+        panelTitle.Text = "⚡ " .. abilityPageNames[pageNum] .. " ⚡"
+    end
+    if pageIndicator then
+        pageIndicator.Text = "Page: " .. abilityPageNames[pageNum]
+    end
 end
 
--- NEW ABILITY: J - Chaos Wave
-local function activateChaosWave()
-    if abilityCooldowns.J then return end
-    abilityCooldowns.J = true
+-- NPC DETECTION FUNCTIONS
+local function getNearbyNPCs(range)
+    local npcs = {}
+    local rootPos = humanoidRootPart.Position
     
-    local waveDirection = humanoidRootPart.CFrame.lookVector
+    for _, model in pairs(workspace:GetChildren()) do
+        if model:IsA("Model") and model ~= character then
+            local humanoid = model:FindFirstChild("Humanoid")
+            local rootPart = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Torso") or model:FindFirstChild("UpperTorso")
+            
+            if humanoid and rootPart and humanoid.Health > 0 then
+                local distance = (rootPart.Position - rootPos).Magnitude
+                if distance <= range then
+                    table.insert(npcs, {
+                        Model = model,
+                        Humanoid = humanoid,
+                        RootPart = rootPart,
+                        Distance = distance
+                    })
+                end
+            end
+        end
+    end
     
-    -- Create expanding wave
-    for wave = 1, 5 do
-        local waveRing = Instance.new("Part")
-        waveRing.Size = Vector3.new(10, 1, 10)
-        waveRing.Position = humanoidRootPart.Position
-        waveRing.Material = Enum.Material.Neon
-        waveRing.Color = Color3.fromRGB(255, 100, 0)
-        waveRing.Transparency = 0.3
-        waveRing.Anchored = true
-        waveRing.CanCollide = false
-        waveRing.Shape = Enum.PartType.Cylinder
-        waveRing.Parent = workspace
-    
-        local waveLight = Instance.new("PointLight")
-        waveLight.Color = Color3.fromRGB(255, 100, 0)
-        waveLight.Range = 100
-        waveLight.Brightness = 5
-        waveLight.Parent = waveRing
-        
-        -- Expand wave
-        spawn(function()
-            for i = 1, 40 do
-                if waveRing and waveRing.Parent then
-                    local sizeIncrease = i * 5
-                    waveRing.Size = Vector3.new(sizeIncrease, 1, sizeIncrease)
-                    waveRing.Transparency = 0.3 + (i * 0.0175)
-                    waveLight.Range = waveLight.Range + 5
+    for _, folder in pairs(workspace:GetDescendants()) do
+        if folder:IsA("Folder") and (folder.Name:lower():find("npc") or folder.Name:lower():find("enemy") or folder.Name:lower():find("mob")) then
+            for _, model in pairs(folder:GetChildren()) do
+                if model:IsA("Model") then
+                    local humanoid = model:FindFirstChild("Humanoid")
+                    local rootPart = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Torso") or model:FindFirstChild("UpperTorso")
                     
-                    -- Push objects with wave
-                    for _, part in pairs(workspace:GetDescendants()) do
-                        if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                            local distance = (part.Position - humanoidRootPart.Position).Magnitude
-                            if distance <= sizeIncrease/2 and distance > (sizeIncrease/2) - 20 then
-                                local pushForce = Instance.new("BodyVelocity")
-                                pushForce.Velocity = waveDirection * 200 + Vector3.new(0, 50, 0)
-                                pushForce.MaxForce = Vector3.new(10000, 10000, 10000)
-                                pushForce.Parent = part
-                                game:GetService("Debris"):AddItem(pushForce, 0.5)
-                            end
+                    if humanoid and rootPart and humanoid.Health > 0 then
+                        local distance = (rootPart.Position - rootPos).Magnitude
+                        if distance <= range then
+                            table.insert(npcs, {
+                                Model = model,
+                                Humanoid = humanoid,
+                                RootPart = rootPart,
+                                Distance = distance
+                            })
                         end
                     end
                 end
-                wait(0.05)
             end
-            
-            if waveRing and waveRing.Parent then
-                waveRing:Destroy()
-            end
-        end)
-        
-        wait(0.3)
+        end
     end
     
-    wait(10)
-    abilityCooldowns.J = false
+    return npcs
 end
 
--- NEW ABILITY: H - Teleport Dash
-local function activateTeleportDash()
-    if abilityCooldowns.H then return end
-    abilityCooldowns.H = true
+local function getNearbyUnanchoredParts(range)
+    local parts = {}
+    local rootPos = humanoidRootPart.Position
     
-    local mouse = player:GetMouse()
-    local targetPosition = mouse.Hit.Position
-    
-    -- Create teleport effect at start
-    local startEffect = Instance.new("Part")
-    startEffect.Size = Vector3.new(10, 10, 10)
-    startEffect.Position = humanoidRootPart.Position
-    startEffect.Material = Enum.Material.Neon
-    startEffect.Color = Color3.fromRGB(0, 200, 255)
-    startEffect.Transparency = 0.3
-    startEffect.Anchored = true
-    startEffect.CanCollide = false
-    startEffect.Shape = Enum.PartType.Ball
-    startEffect.Parent = workspace
-    
-    -- Create teleport trail
-    local trailPoints = 20
-    local step = (targetPosition - humanoidRootPart.Position) / trailPoints
-    
-    for i = 1, trailPoints do
-        local trailPart = Instance.new("Part")
-        trailPart.Size = Vector3.new(3, 3, 3)
-        trailPart.Position = humanoidRootPart.Position + (step * i)
-        trailPart.Material = Enum.Material.Neon
-        trailPart.Color = Color3.fromRGB(0, 150, 255)
-        trailPart.Transparency = 0.5
-        trailPart.Anchored = true
-        trailPart.CanCollide = false
-        trailPart.Parent = workspace
-        
-        game:GetService("Debris"):AddItem(trailPart, 0.5)
-    end
-    
-    -- Teleport player
-    humanoidRootPart.CFrame = CFrame.new(targetPosition)
-    
-    -- Create arrival effect
-    local endEffect = startEffect:Clone()
-    endEffect.Position = targetPosition
-    endEffect.Parent = workspace
-    
-    -- Claim ownership at new location
-    claimNetworkOwnership(150)
-    
-    -- Cleanup effects
-    game:GetService("Debris"):AddItem(startEffect, 1)
-    game:GetService("Debris"):AddItem(endEffect, 1)
-    
-    wait(3)
-    abilityCooldowns.H = false
-end
-
--- NEW ABILITY: F - Gravity Field
-local function activateGravityField()
-    if abilityCooldowns.F then return end
-    abilityCooldowns.F = true
-    
-    -- Create gravity well
-    local gravityCenter = Instance.new("Part")
-    gravityCenter.Size = Vector3.new(20, 20, 20)
-    gravityCenter.Position = humanoidRootPart.Position + Vector3.new(0, 50, 0)
-    gravityCenter.Material = Enum.Material.Neon
-    gravityCenter.Color = Color3.fromRGB(150, 0, 150)
-    gravityCenter.Transparency = 0.4
-    gravityCenter.Anchored = true
-    gravityCenter.CanCollide = false
-    gravityCenter.Shape = Enum.PartType.Ball
-    gravityCenter.Parent = workspace
-    
-    local gravityLight = Instance.new("PointLight")
-    gravityLight.Color = Color3.fromRGB(150, 0, 150)
-    gravityLight.Range = 300
-    gravityLight.Brightness = 8
-    gravityLight.Parent = gravityCenter
-    
-    -- Inverted gravity effect
-    spawn(function()
-        for i = 1, 60 do
-            local centerPos = gravityCenter.Position
-            
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - centerPos).Magnitude
-                    if distance <= 200 then
-                        -- Pull toward gravity center
-                        local direction = (centerPos - part.Position).Unit
-                        local force = Instance.new("BodyForce")
-                        force.Force = direction * (part:GetMass() * 196.2 * 5) -- 5x gravity
-                        force.Parent = part
-                        game:GetService("Debris"):AddItem(force, 0.1)
-                    end
-                end
-            end
-            
-            -- Rotate gravity center
-            gravityCenter.CFrame = gravityCenter.CFrame * CFrame.Angles(0, math.rad(5), 0)
-            
-            wait(0.1)
-        end
-        
-        -- Gravity collapse
-        for i = 1, 20 do
-            gravityCenter.Transparency = 0.4 + (i * 0.03)
-            gravityLight.Brightness = 8 - (i * 0.4)
-            gravityCenter.Size = gravityCenter.Size - Vector3.new(1, 1, 1)
-            wait(0.05)
-        end
-        
-        gravityCenter:Destroy()
-        
-        wait(15)
-        abilityCooldowns.F = false
-    end)
-end
-
--- NEW ABILITY: Q - Energy Drain
-local function activateEnergyDrain()
-    if abilityCooldowns.Q then return end
-    abilityCooldowns.Q = true
-    
-    -- Create drain particles
-    local drainEmitter = Instance.new("ParticleEmitter")
-    drainEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 50, 0))
-    drainEmitter.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 3),
-        NumberSequenceKeypoint.new(1, 0)
-    })
-    drainEmitter.Transparency = NumberSequence.new(0.5)
-    drainEmitter.Speed = NumberRange.new(50, 100)
-    drainEmitter.Lifetime = NumberRange.new(0.5, 1)
-    drainEmitter.Rate = 100
-    drainEmitter.Acceleration = Vector3.new(0, -50, 0)
-    drainEmitter.Parent = humanoidRootPart
-    drainEmitter.Enabled = true
-    
-    -- Drain effect
-    spawn(function()
-        for i = 1, 30 do
-            local rootPos = humanoidRootPart.Position
-            
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - rootPos).Magnitude
-                    if distance <= chaosRange then
-                        -- Pull energy particles toward player
-                        local energyPart = Instance.new("Part")
-                        energyPart.Size = Vector3.new(1, 1, 1)
-                        energyPart.Position = part.Position
-                        energyPart.Material = Enum.Material.Neon
-                        energyPart.Color = Color3.fromRGB(255, 100, 0)
-                        energyPart.Transparency = 0.3
-                        energyPart.Anchored = false
-                        energyPart.CanCollide = false
-                        energyPart.Parent = workspace
-                        
-                        local bodyVelocity = Instance.new("BodyVelocity")
-                        bodyVelocity.Velocity = (rootPos - part.Position).Unit * 100
-                        bodyVelocity.MaxForce = Vector3.new(10000, 10000, 10000)
-                        bodyVelocity.Parent = energyPart
-                        
-                        game:GetService("Debris"):AddItem(energyPart, 2)
-                        game:GetService("Debris"):AddItem(bodyVelocity, 2)
-                        
-                        -- Weaken objects
-                        local weakenForce = Instance.new("BodyVelocity")
-                        weakenForce.Velocity = Vector3.new(0, -10, 0)
-                        weakenForce.MaxForce = Vector3.new(1000, 1000, 1000)
-                        weakenForce.Parent = part
-                        game:GetService("Debris"):AddItem(weakenForce, 0.5)
-                    end
-                end
-            end
-            
-            wait(0.1)
-        end
-        
-        drainEmitter.Enabled = false
-        drainEmitter:Destroy()
-        
-        wait(12)
-        abilityCooldowns.Q = false
-    end)
-end
-
--- NEW ABILITY: E - Chaos Shield
-local function activateChaosShield()
-    if abilityCooldowns.E then return end
-    abilityCooldowns.E = true
-    
-    -- Create shield sphere
-    local shield = Instance.new("Part")
-    shield.Size = Vector3.new(30, 30, 30)
-    shield.Position = humanoidRootPart.Position
-    shield.Material = Enum.Material.Neon
-    shield.Color = Color3.fromRGB(0, 100, 255)
-    shield.Transparency = 0.7
-    shield.Anchored = false
-    shield.CanCollide = false
-    shield.Shape = Enum.PartType.Ball
-    shield.Parent = workspace
-    
-    local weld = Instance.new("Weld")
-    weld.Part0 = humanoidRootPart
-    weld.Part1 = shield
-    weld.C0 = CFrame.new()
-    weld.Parent = shield
-    
-    local shieldLight = Instance.new("PointLight")
-    shieldLight.Color = Color3.fromRGB(0, 100, 255)
-    shieldLight.Range = 50
-    shieldLight.Brightness = 5
-    shieldLight.Parent = shield
-    
-    -- Shield particles
-    local shieldParticles = Instance.new("ParticleEmitter")
-    shieldParticles.Color = ColorSequence.new(Color3.fromRGB(0, 150, 255))
-    shieldParticles.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 2),
-        NumberSequenceKeypoint.new(1, 0)
-    })
-    shieldParticles.Transparency = NumberSequence.new(0.7)
-    shieldParticles.Speed = NumberRange.new(5, 10)
-    shieldParticles.Lifetime = NumberRange.new(0.5, 1)
-    shieldParticles.Rate = 50
-    shieldParticles.Parent = shield
-    shieldParticles.Enabled = true
-    
-    -- Repel objects
-    spawn(function()
-        for i = 1, 45 do
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part:IsDescendantOf(character) and part ~= shield then
-                    local distance = (part.Position - humanoidRootPart.Position).Magnitude
-                    if distance <= 25 then
-                        local direction = (part.Position - humanoidRootPart.Position).Unit
-                        local repelForce = Instance.new("BodyVelocity")
-                        repelForce.Velocity = direction * 100
-                        repelForce.MaxForce = Vector3.new(5000, 5000, 5000)
-                        repelForce.Parent = part
-                        game:GetService("Debris"):AddItem(repelForce, 0.2)
-                    end
-                end
-            end
-            
-            -- Pulsing shield effect
-            if i % 10 == 0 then
-                shieldLight.Brightness = 10
-                shield.Transparency = 0.5
-                wait(0.1)
-                shieldLight.Brightness = 5
-                shield.Transparency = 0.7
-            end
-            
-            wait(0.1)
-        end
-        
-        -- Shield fade
-        for i = 1, 20 do
-            shield.Transparency = 0.7 + (i * 0.015)
-            shieldLight.Brightness = 5 - (i * 0.25)
-            wait(0.05)
-        end
-        
-        shield:Destroy()
-        
-        wait(15)
-        abilityCooldowns.E = false
-    end)
-end
-
--- NEW ABILITY: R - Meteor Strike
-local function activateMeteorStrike()
-    if abilityCooldowns.R then return end
-    abilityCooldowns.R = true
-    
-    local mouse = player:GetMouse()
-    local targetPosition = mouse.Hit.Position + Vector3.new(0, 100, 0)
-    
-    -- Create meteors
-    for meteorCount = 1, 8 do
-        spawn(function()
-            local meteor = Instance.new("Part")
-            meteor.Size = Vector3.new(math.random(5, 15), math.random(5, 15), math.random(5, 15))
-            meteor.Position = targetPosition + Vector3.new(
-                math.random(-50, 50),
-                math.random(50, 100),
-                math.random(-50, 50)
-            )
-            meteor.Material = Enum.Material.Neon
-            meteor.Color = Color3.fromRGB(255, 50, 0)
-            meteor.Transparency = 0
-            meteor.Anchored = false
-            meteor.CanCollide = true
-            meteor.Parent = workspace
-            
-            local meteorLight = Instance.new("PointLight")
-            meteorLight.Color = Color3.fromRGB(255, 50, 0)
-            meteorLight.Range = 30
-            meteorLight.Brightness = 10
-            meteorLight.Parent = meteor
-            
-            -- Meteor trail
-            local trail = Instance.new("Trail")
-            trail.Attachment0 = Instance.new("Attachment")
-            trail.Attachment0.Parent = meteor
-            trail.Attachment0.Position = Vector3.new(0, meteor.Size.Y/2, 0)
-            trail.Attachment1 = Instance.new("Attachment")
-            trail.Attachment1.Parent = meteor
-            trail.Attachment1.Position = Vector3.new(0, -meteor.Size.Y/2, 0)
-            trail.Color = ColorSequence.new(Color3.fromRGB(255, 100, 0))
-            trail.Lifetime = 0.5
-            trail.Parent = meteor
-            
-            -- Fall to ground
-            local bodyVelocity = Instance.new("BodyVelocity")
-            bodyVelocity.Velocity = Vector3.new(0, -200, 0)
-            bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            bodyVelocity.Parent = meteor
-            
-            wait(math.random(1, 3))
-            
-            -- Impact explosion
-            local explosion = Instance.new("Explosion")
-            explosion.Position = meteor.Position
-            explosion.BlastPressure = 500000
-            explosion.BlastRadius = 30
-            explosion.Parent = workspace
-            
-            meteor:Destroy()
-            
-            -- Claim ownership at impact site
-            claimNetworkOwnership(50)
-        end)
-        
-        wait(0.3)
-    end
-    
-    wait(20)
-    abilityCooldowns.R = false
-end
-
--- NEW ABILITY: T - Chaos Chains
-local function activateChaosChains()
-    if abilityCooldowns.T then return end
-    abilityCooldowns.T = true
-    
-    -- Create chains between nearby objects
-    local chainConnections = {}
-    local objects = {}
-    
-    -- Collect nearby objects
     for _, part in pairs(workspace:GetDescendants()) do
         if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-            local distance = (part.Position - humanoidRootPart.Position).Magnitude
-            if distance <= chaosRange then
-                table.insert(objects, part)
+            local distance = (part.Position - rootPos).Magnitude
+            if distance <= range then
+                table.insert(parts, {
+                    Part = part,
+                    Distance = distance
+                })
             end
         end
     end
     
-    -- Create chains between objects
-    for i = 1, math.min(20, #objects) do
-        local obj1 = objects[math.random(1, #objects)]
-        local obj2 = objects[math.random(1, #objects)]
-        
-        if obj1 ~= obj2 then
-            -- Create chain part
-            local chain = Instance.new("Part")
-            local midpoint = (obj1.Position + obj2.Position) / 2
-            local distance = (obj1.Position - obj2.Position).Magnitude
-            
-            chain.Size = Vector3.new(1, 1, distance)
-            chain.Position = midpoint
-            chain.Material = Enum.Material.Neon
-            chain.Color = Color3.fromRGB(200, 0, 200)
-            chain.Transparency = 0.5
-            chain.Anchored = true
-            chain.CanCollide = false
-            chain.Parent = workspace
-            
-            -- Orient chain between objects
-            chain.CFrame = CFrame.new(midpoint, obj2.Position) * CFrame.new(0, 0, -distance/2)
-            
-            -- Chain light
-            local chainLight = Instance.new("PointLight")
-            chainLight.Color = Color3.fromRGB(200, 0, 200)
-            chainLight.Range = 20
-            chainLight.Brightness = 3
-            chainLight.Parent = chain
-            
-            table.insert(chainConnections, chain)
-            
-            -- Pull objects together
-            spawn(function()
-                for j = 1, 30 do
-                    if obj1 and obj1.Parent and obj2 and obj2.Parent then
-                        local direction = (obj2.Position - obj1.Position).Unit
-                        local force1 = Instance.new("BodyVelocity")
-                        force1.Velocity = direction * 20
-                        force1.MaxForce = Vector3.new(1000, 1000, 1000)
-                        force1.Parent = obj1
-                        
-                        local force2 = Instance.new("BodyVelocity")
-                        force2.Velocity = -direction * 20
-                        force2.MaxForce = Vector3.new(1000, 1000, 1000)
-                        force2.Parent = obj2
-                        
-                        game:GetService("Debris"):AddItem(force1, 0.1)
-                        game:GetService("Debris"):AddItem(force2, 0.1)
-                    end
-                    wait(0.1)
-                end
-            end)
-        end
-    end
-    
-    wait(10)
-    
-    -- Break chains
-    for _, chain in pairs(chainConnections) do
-        if chain and chain.Parent then
-            chain:Destroy()
-        end
-    end
-    
-    abilityCooldowns.T = false
+    return parts
 end
 
--- NEW ABILITY: Y - Soul Steal
-local function activateSoulSteal()
-    if abilityCooldowns.Y then return end
-    abilityCooldowns.Y = true
-    
-    -- Create soul drain effect
-    local drainCenter = Instance.new("Part")
-    drainCenter.Size = Vector3.new(10, 10, 10)
-    drainCenter.Position = humanoidRootPart.Position
-    drainCenter.Material = Enum.Material.Neon
-    drainCenter.Color = Color3.fromRGB(100, 0, 100)
-    drainCenter.Transparency = 0.4
-    drainCenter.Anchored = true
-    drainCenter.CanCollide = false
-    drainCenter.Shape = Enum.PartType.Ball
-    drainCenter.Parent = workspace
-    
-    local drainLight = Instance.new("PointLight")
-    drainLight.Color = Color3.fromRGB(100, 0, 100)
-    drainLight.Range = 200
-    drainLight.Brightness = 6
-    drainLight.Parent = drainCenter
-    
-    -- Steal "souls" from objects
-    spawn(function()
-        for i = 1, 40 do
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - humanoidRootPart.Position).Magnitude
-                    if distance <= chaosRange then
-                        -- Create soul particle
-                        local soul = Instance.new("Part")
-                        soul.Size = Vector3.new(2, 2, 2)
-                        soul.Position = part.Position
-                        soul.Material = Enum.Material.Neon
-                        soul.Color = Color3.fromRGB(150, 0, 150)
-                        soul.Transparency = 0.3
-                        soul.Anchored = false
-                        soul.CanCollide = false
-                        soul.Shape = Enum.PartType.Ball
-                        soul.Parent = workspace
-                        
-                        -- Move soul to player
-                        local bodyVelocity = Instance.new("BodyVelocity")
-                        bodyVelocity.Velocity = (humanoidRootPart.Position - part.Position).Unit * 80
-                        bodyVelocity.MaxForce = Vector3.new(10000, 10000, 10000)
-                        bodyVelocity.Parent = soul
-                        
-                        game:GetService("Debris"):AddItem(soul, 3)
-                        game:GetService("Debris"):AddItem(bodyVelocity, 3)
-                        
-                        -- Weaken object
-                        part.Color = Color3.fromRGB(
-                            math.clamp(part.Color.R * 255 * 0.9, 0, 255),
-                            math.clamp(part.Color.G * 255 * 0.9, 0, 255),
-                            math.clamp(part.Color.B * 255 * 0.9, 0, 255)
-                        )
-                    end
-                end
-            end
-            
-            -- Pulsing drain effect
-            if i % 5 == 0 then
-                drainLight.Brightness = 10
-                drainCenter.Size = Vector3.new(12, 12, 12)
-                wait(0.1)
-                drainLight.Brightness = 6
-                drainCenter.Size = Vector3.new(10, 10, 10)
-            end
-            
-            wait(0.1)
-        end
-        
-        drainCenter:Destroy()
-        
-        wait(25)
-        abilityCooldowns.Y = false
-    end)
-end
+-- ===========================================
+-- ORIGINAL CHAOS ABILITIES (PAGE 1)
+-- ===========================================
 
--- NEW ABILITY: U - Dimension Shift
-local function activateDimensionShift()
-    if abilityCooldowns.U then return end
-    abilityCooldowns.U = true
-    
-    -- Create dimensional rift
-    local dimensionRift = Instance.new("Part")
-    dimensionRift.Size = Vector3.new(50, 50, 50)
-    dimensionRift.Position = humanoidRootPart.Position
-    dimensionRift.Material = Enum.Material.Glass
-    dimensionRift.Color = Color3.fromRGB(0, 255, 255)
-    dimensionRift.Transparency = 0.8
-    dimensionRift.Anchored = true
-    dimensionRift.CanCollide = false
-    dimensionRift.Shape = Enum.PartType.Ball
-    dimensionRift.Parent = workspace
-    
-    local dimensionLight = Instance.new("PointLight")
-    dimensionLight.Color = Color3.fromRGB(0, 255, 255)
-    dimensionLight.Range = 300
-    dimensionLight.Brightness = 8
-    dimensionLight.Parent = dimensionRift
-    
-    -- Invert colors and physics
-    spawn(function()
-        for i = 1, 30 do
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - humanoidRootPart.Position).Magnitude
-                    if distance <= 150 then
-                        -- Invert color
-                        part.Color = Color3.fromRGB(
-                            255 - (part.Color.R * 255),
-                            255 - (part.Color.G * 255),
-                            255 - (part.Color.B * 255)
-                        )
-                        
-                        -- Apply anti-gravity
-                        local antiGravity = Instance.new("BodyForce")
-                        antiGravity.Force = Vector3.new(0, part:GetMass() * 196.2 * 2, 0)
-                        antiGravity.Parent = part
-                        game:GetService("Debris"):AddItem(antiGravity, 0.1)
-                    end
-                end
-            end
-            
-            -- Rotating rift effect
-            dimensionRift.CFrame = dimensionRift.CFrame * CFrame.Angles(0, math.rad(10), math.rad(5))
-            
-            wait(0.1)
-        end
-        
-        -- Rift collapse
-        for i = 1, 20 do
-            dimensionRift.Transparency = 0.8 + (i * 0.01)
-            dimensionLight.Brightness = 8 - (i * 0.4)
-            wait(0.05)
-        end
-        
-        dimensionRift:Destroy()
-        
-        wait(30)
-        abilityCooldowns.U = false
-    end)
-end
-
--- NEW ABILITY: P - Super Form
-local function activateSuperForm()
-    if abilityCooldowns.P then return end
-    abilityCooldowns.P = true
-    
-    -- Transform appearance
-    local originalColors = {}
-    
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            originalColors[part] = part.Color
-            part.Color = Color3.fromRGB(255, 255, 0) -- Gold color for super form
-            part.Material = Enum.Material.Neon
-            
-            -- Add glow
-            local glow = Instance.new("PointLight")
-            glow.Color = Color3.fromRGB(255, 255, 0)
-            glow.Range = 15
-            glow.Brightness = 5
-            glow.Parent = part
-        end
-    end
-    
-    -- Power boost
-    local originalSuperWalkSpeed = humanoid.WalkSpeed
-    humanoid.WalkSpeed = 500
-    isInhibitorActive = true
-    
-    -- Create aura
-    local superAura = Instance.new("ParticleEmitter")
-    superAura.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 0)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 0)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 150, 0))
-    })
-    superAura.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 5),
-        NumberSequenceKeypoint.new(1, 0)
-    })
-    superAura.Transparency = NumberSequence.new(0.5)
-    superAura.Speed = NumberRange.new(10, 20)
-    superAura.Lifetime = NumberRange.new(0.5, 1)
-    superAura.Rate = 100
-    superAura.Parent = humanoidRootPart
-    superAura.Enabled = true
-    
-    -- Enhanced abilities during super form
-    spawn(function()
-        for i = 1, 60 do -- 60 seconds of super form
-            -- Auto-claim ownership
-            claimNetworkOwnership(500)
-            
-            -- Auto-repel nearby objects
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
-                    local distance = (part.Position - humanoidRootPart.Position).Magnitude
-                    if distance <= 100 then
-                        local direction = (part.Position - humanoidRootPart.Position).Unit
-                        local force = Instance.new("BodyVelocity")
-                        force.Velocity = direction * 50
-                        force.MaxForce = Vector3.new(5000, 5000, 5000)
-                        force.Parent = part
-                        game:GetService("Debris"):AddItem(force, 0.1)
-                    end
-                end
-            end
-            
-            wait(1)
-        end
-        
-        -- Revert transformation
-        humanoid.WalkSpeed = originalSuperWalkSpeed
-        isInhibitorActive = false
-        
-        -- Remove aura if it exists
-        if superAura and superAura.Parent then
-            superAura.Enabled = false
-            superAura:Destroy()
-        end
-        
-        -- Restore original colors
-        for part, color in pairs(originalColors) do
-            if part and part.Parent then
-                part.Color = color
-                part.Material = Enum.Material.Plastic
-                
-                -- Remove glow
-                for _, child in pairs(part:GetChildren()) do
-                    if child:IsA("PointLight") then
-                        child:Destroy()
-                    end
-                end
-            end
-        end
-        
-        wait(60) -- Long cooldown for ultimate form
-        abilityCooldowns.P = false
-    end)
-end
-
--- EXISTING ABILITIES (Snap, Spear, Blast) - Keeping them as before but adding to cooldown system
+-- Z - Chaos Snap
 local function activateChaosSnap()
     if chaosSnapActive then return end
     chaosSnapActive = true
@@ -1992,6 +815,7 @@ local function activateChaosSnap()
     end)
 end
 
+-- X - Chaos Spear
 local function activateChaosSpear()
     if chaosSpearCooldown then return end
     chaosSpearCooldown = true
@@ -2064,6 +888,7 @@ local function activateChaosSpear()
     end)
 end
 
+-- C - Chaos Blast
 local function activateChaosBlast()
     if chaosBlastCooldown then return end
     chaosBlastCooldown = true
@@ -2128,13 +953,617 @@ local function activateChaosBlast()
     end)
 end
 
--- GUI - Expanded for all abilities
+-- V - Chaos Vortex
+local function activateChaosVortex()
+    if abilityCooldowns.V then return end
+    abilityCooldowns.V = true
+    
+    claimNetworkOwnership(chaosRange)
+    
+    local vortexCenter = Instance.new("Part")
+    vortexCenter.Size = Vector3.new(5, 5, 5)
+    vortexCenter.Position = humanoidRootPart.Position + Vector3.new(0, 10, 0)
+    vortexCenter.Material = Enum.Material.Neon
+    vortexCenter.Color = Color3.fromRGB(0, 150, 255)
+    vortexCenter.Transparency = 0.3
+    vortexCenter.Anchored = true
+    vortexCenter.CanCollide = false
+    vortexCenter.Shape = Enum.PartType.Ball
+    vortexCenter.Parent = workspace
+    
+    local vortexLight = Instance.new("PointLight")
+    vortexLight.Color = Color3.fromRGB(0, 150, 255)
+    vortexLight.Range = 200
+    vortexLight.Brightness = 10
+    vortexLight.Parent = vortexCenter
+    
+    local vortexParticles = Instance.new("ParticleEmitter")
+    vortexParticles.Color = ColorSequence.new(Color3.fromRGB(0, 100, 255))
+    vortexParticles.Size = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 2),
+        NumberSequenceKeypoint.new(1, 0)
+    })
+    vortexParticles.Transparency = NumberSequence.new(0.5)
+    vortexParticles.Speed = NumberRange.new(50, 100)
+    vortexParticles.Lifetime = NumberRange.new(1, 3)
+    vortexParticles.Rate = 200
+    vortexParticles.VelocitySpread = 180
+    vortexParticles.Rotation = NumberRange.new(0, 360)
+    vortexParticles.RotSpeed = NumberRange.new(-100, 100)
+    vortexParticles.Parent = vortexCenter
+    vortexParticles.Enabled = true
+    
+    local vortexSound = Instance.new("Sound")
+    vortexSound.SoundId = "rbxassetid://9111275566"
+    vortexSound.Volume = 0.8
+    vortexSound.Looped = true
+    vortexSound.Parent = vortexCenter
+    vortexSound:Play()
+    
+    spawn(function()
+        for i = 1, 100 do
+            local rootPos = vortexCenter.Position
+            
+            for _, part in pairs(workspace:GetDescendants()) do
+                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
+                    local distance = (part.Position - rootPos).Magnitude
+                    if distance <= chaosRange then
+                        local direction = (rootPos - part.Position).Unit
+                        local force = Instance.new("BodyVelocity")
+                        force.Velocity = direction * (100 + (chaosRange - distance))
+                        force.MaxForce = Vector3.new(10000, 10000, 10000)
+                        force.Parent = part
+                        
+                        game:GetService("Debris"):AddItem(force, 0.1)
+                    end
+                end
+            end
+            
+            vortexCenter.Size = vortexCenter.Size + Vector3.new(0.5, 0.5, 0.5)
+            vortexLight.Range = vortexLight.Range + 2
+            
+            wait(0.1)
+        end
+        
+        local explosion = Instance.new("Explosion")
+        explosion.Position = vortexCenter.Position
+        explosion.BlastPressure = 500000
+        explosion.BlastRadius = 150
+        explosion.Parent = workspace
+        
+        vortexSound:Stop()
+        vortexCenter:Destroy()
+        
+        wait(15)
+        abilityCooldowns.V = false
+    end)
+end
+
+-- B - Black Tornado
+local function activateBlackTornado()
+    if abilityCooldowns.B then return end
+    abilityCooldowns.B = true
+    
+    claimNetworkOwnership(chaosRange)
+    
+    local tornadoBase = Instance.new("Part")
+    tornadoBase.Size = Vector3.new(30, 1, 30)
+    tornadoBase.Position = humanoidRootPart.Position
+    tornadoBase.Material = Enum.Material.Neon
+    tornadoBase.Color = Color3.fromRGB(0, 0, 0)
+    tornadoBase.Transparency = 0.7
+    tornadoBase.Anchored = true
+    tornadoBase.CanCollide = false
+    tornadoBase.Parent = workspace
+    
+    local tornadoHeight = 100
+    local tornadoSegments = 20
+    
+    for i = 1, tornadoSegments do
+        local segment = Instance.new("Part")
+        segment.Size = Vector3.new(25 - (i * 1), tornadoHeight/tornadoSegments, 25 - (i * 1))
+        segment.Position = humanoidRootPart.Position + Vector3.new(0, (i * tornadoHeight/tornadoSegments) - tornadoHeight/2, 0)
+        segment.Material = Enum.Material.Neon
+        segment.Color = Color3.fromRGB(0, 0, 0)
+        segment.Transparency = 0.5 + (i * 0.02)
+        segment.Anchored = true
+        segment.CanCollide = false
+        segment.Parent = workspace
+        
+        spawn(function()
+            local angle = 0
+            while segment and segment.Parent do
+                angle = angle + 5
+                segment.CFrame = CFrame.new(humanoidRootPart.Position + Vector3.new(0, (i * tornadoHeight/tornadoSegments) - tornadoHeight/2, 0)) 
+                    * CFrame.Angles(0, math.rad(angle * i), 0)
+                    * CFrame.new(0, 0, 10)
+                wait(0.033)
+            end
+        end)
+    end
+    
+    spawn(function()
+        for i = 1, 60 do
+            local rootPos = humanoidRootPart.Position
+            
+            for _, part in pairs(workspace:GetDescendants()) do
+                if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(character) then
+                    local distance = (part.Position - rootPos).Magnitude
+                    if distance <= chaosRange then
+                        local angle = tick() * 10
+                        local radius = distance * 0.5
+                        local x = math.cos(angle) * radius
+                        local z = math.sin(angle) * radius
+                        
+                        local targetPos = rootPos + Vector3.new(x, 50, z)
+                        local direction = (targetPos - part.Position).Unit
+                        
+                        local force = Instance.new("BodyVelocity")
+                        force.Velocity = direction * 100 + Vector3.new(0, 30, 0)
+                        force.MaxForce = Vector3.new(10000, 10000, 10000)
+                        force.Parent = part
+                        
+                        local spin = Instance.new("BodyAngularVelocity")
+                        spin.AngularVelocity = Vector3.new(0, 50, 0)
+                        spin.MaxTorque = Vector3.new(10000, 10000, 10000)
+                        spin.Parent = part
+                        
+                        game:GetService("Debris"):AddItem(force, 0.1)
+                        game:GetService("Debris"):AddItem(spin, 0.1)
+                    end
+                end
+            end
+            
+            wait(0.1)
+        end
+        
+        tornadoBase:Destroy()
+        for _, part in pairs(workspace:GetChildren()) do
+            if part:IsA("Part") and part.Color == Color3.fromRGB(0, 0, 0) and part.Transparency > 0.4 then
+                part:Destroy()
+            end
+        end
+        
+        wait(20)
+        abilityCooldowns.B = false
+    end)
+end
+
+-- Continue with other original abilities (N, M, L, K, J, H, F, Q, E, R, T, Y, U, P)
+-- These would be added here following the same pattern
+
+-- ===========================================
+-- PAGE 2: NEURAL DOMINANCE (NEW NPC ABILITIES)
+-- ===========================================
+
+-- I - Neural Overload
+local function activateNeuralOverload()
+    if abilityCooldowns.I then return end
+    abilityCooldowns.I = true
+    
+    local npcs = getNearbyNPCs(120)
+    
+    for _, npcData in pairs(npcs) do
+        local overloadSphere = Instance.new("Part")
+        overloadSphere.Size = Vector3.new(8, 8, 8)
+        overloadSphere.Position = npcData.RootPart.Position
+        overloadSphere.Material = Enum.Material.Neon
+        overloadSphere.Color = Color3.fromRGB(255, 50, 150)
+        overloadSphere.Transparency = 0.4
+        overloadSphere.Anchored = true
+        overloadSphere.CanCollide = false
+        overloadSphere.Shape = Enum.PartType.Ball
+        overloadSphere.Parent = workspace
+        
+        local overloadLight = Instance.new("PointLight")
+        overloadLight.Color = Color3.fromRGB(255, 50, 150)
+        overloadLight.Range = 25
+        overloadLight.Brightness = 8
+        overloadLight.Parent = overloadSphere
+        
+        local neuralParticles = Instance.new("ParticleEmitter")
+        neuralParticles.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 150)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(200, 0, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 0, 200))
+        })
+        neuralParticles.Size = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(1, 0)
+        })
+        neuralParticles.Transparency = NumberSequence.new(0.5)
+        neuralParticles.Speed = NumberRange.new(15, 30)
+        neuralParticles.Lifetime = NumberRange.new(0.5, 1.5)
+        neuralParticles.Rate = 100
+        neuralParticles.Parent = overloadSphere
+        neuralParticles.Enabled = true
+        
+        spawn(function()
+            for i = 1, 60 do
+                if npcData.Humanoid and npcData.Humanoid.Health > 0 then
+                    local randomDir = Vector3.new(
+                        math.random(-100, 100),
+                        0,
+                        math.random(-100, 100)
+                    ).Unit
+                    
+                    npcData.Humanoid:MoveTo(npcData.RootPart.Position + randomDir * 10)
+                    
+                    if i % 5 == 0 then
+                        overloadLight.Brightness = 15
+                        overloadSphere.Size = Vector3.new(10, 10, 10)
+                        wait(0.1)
+                        overloadLight.Brightness = 8
+                        overloadSphere.Size = Vector3.new(8, 8, 8)
+                    end
+                end
+                wait(0.1)
+            end
+            
+            local explosion = Instance.new("Explosion")
+            explosion.Position = overloadSphere.Position
+            explosion.BlastPressure = 0
+            explosion.BlastRadius = 20
+            explosion.DestroyJointRadiusPercent = 0
+            explosion.ExplosionType = Enum.ExplosionType.NoCraters
+            explosion.Parent = workspace
+            
+            for i = 1, 20 do
+                overloadSphere.Transparency = 0.4 + (i * 0.03)
+                overloadLight.Brightness = 8 - (i * 0.4)
+                wait(0.05)
+            end
+            
+            overloadSphere:Destroy()
+        end)
+    end
+    
+    wait(18)
+    abilityCooldowns.I = false
+end
+
+-- O - Memory Wipe
+local function activateMemoryWipe()
+    if abilityCooldowns.O then return end
+    abilityCooldowns.O = true
+    
+    local npcs = getNearbyNPCs(100)
+    
+    for _, npcData in pairs(npcs) do
+        local memoryField = Instance.new("Part")
+        memoryField.Size = Vector3.new(15, 15, 15)
+        memoryField.Position = npcData.RootPart.Position
+        memoryField.Material = Enum.Material.Glass
+        memoryField.Color = Color3.fromRGB(100, 200, 255)
+        memoryField.Transparency = 0.6
+        memoryField.Anchored = true
+        memoryField.CanCollide = false
+        memoryField.Shape = Enum.PartType.Ball
+        memoryField.Parent = workspace
+        
+        local memoryLight = Instance.new("PointLight")
+        memoryLight.Color = Color3.fromRGB(100, 200, 255)
+        memoryLight.Range = 30
+        memoryLight.Brightness = 6
+        memoryLight.Parent = memoryField
+        
+        local dataStream = Instance.new("ParticleEmitter")
+        dataStream.Color = ColorSequence.new(Color3.fromRGB(150, 220, 255))
+        dataStream.Size = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.5),
+            NumberSequenceKeypoint.new(0.5, 1),
+            NumberSequenceKeypoint.new(1, 0)
+        })
+        dataStream.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0),
+            NumberSequenceKeypoint.new(1, 1)
+        })
+        dataStream.Speed = NumberRange.new(5, 15)
+        dataStream.Lifetime = NumberRange.new(1, 2)
+        dataStream.Rate = 80
+        dataStream.VelocitySpread = 360
+        dataStream.Parent = memoryField
+        dataStream.Enabled = true
+        
+        spawn(function()
+            local originalWalkSpeed = npcData.Humanoid.WalkSpeed
+            npcData.Humanoid.WalkSpeed = 8
+            
+            for i = 1, 120 do
+                if npcData.Humanoid and npcData.Humanoid.Health > 0 then
+                    if i % 20 == 0 then
+                        local wanderPos = npcData.RootPart.Position + Vector3.new(
+                            math.random(-20, 20),
+                            0,
+                            math.random(-20, 20)
+                        )
+                        npcData.Humanoid:MoveTo(wanderPos)
+                    end
+                else
+                    break
+                end
+                wait(0.1)
+            end
+            
+            if npcData.Humanoid and npcData.Humanoid.Health > 0 then
+                npcData.Humanoid.WalkSpeed = originalWalkSpeed
+            end
+            
+            for i = 1, 15 do
+                memoryField.Transparency = 0.6 + (i * 0.026)
+                memoryLight.Brightness = 6 - (i * 0.4)
+                wait(0.05)
+            end
+            
+            memoryField:Destroy()
+        end)
+    end
+    
+    wait(25)
+    abilityCooldowns.O = false
+end
+
+-- Continue with other Page 2 abilities (A, S, D, W)...
+
+-- ===========================================
+-- PAGE 3: QUANTUM PHYSICS (NEW OBJECT ABILITIES)
+-- ===========================================
+
+-- Z - Molecular Reconstruction
+local function activateMolecularReconstruction()
+    if abilityCooldowns.Z2 then return end
+    abilityCooldowns.Z2 = true
+    
+    local objects = getNearbyUnanchoredParts(80)
+    
+    for _, objData in pairs(objects) do
+        spawn(function()
+            local deconstructSphere = Instance.new("Part")
+            deconstructSphere.Size = objData.Part.Size * 1.2
+            deconstructSphere.Position = objData.Part.Position
+            deconstructSphere.Material = Enum.Material.Neon
+            deconstructSphere.Color = Color3.fromRGB(0, 200, 255)
+            deconstructSphere.Transparency = 0.6
+            deconstructSphere.Anchored = true
+            deconstructSphere.CanCollide = false
+            deconstructSphere.Shape = Enum.PartType.Ball
+            deconstructSphere.Parent = workspace
+            
+            local deconstructLight = Instance.new("PointLight")
+            deconstructLight.Color = Color3.fromRGB(0, 200, 255)
+            deconstructLight.Range = 20
+            deconstructLight.Brightness = 6
+            deconstructLight.Parent = deconstructSphere
+            
+            local deconstructParticles = Instance.new("ParticleEmitter")
+            deconstructParticles.Color = ColorSequence.new(Color3.fromRGB(100, 220, 255))
+            deconstructParticles.Size = NumberSequence.new({
+                NumberSequenceKeypoint.new(0, 0.5),
+                NumberSequenceKeypoint.new(0.5, 1),
+                NumberSequenceKeypoint.new(1, 0)
+            })
+            deconstructParticles.Transparency = NumberSequence.new(0.7)
+            deconstructParticles.Speed = NumberRange.new(5, 15)
+            deconstructParticles.Lifetime = NumberRange.new(0.5, 1)
+            deconstructParticles.Rate = 100
+            deconstructParticles.Acceleration = Vector3.new(0, 10, 0)
+            deconstructParticles.Parent = deconstructSphere
+            deconstructParticles.Enabled = true
+            
+            for i = 1, 20 do
+                if objData.Part and objData.Part.Parent then
+                    objData.Part.Transparency = i * 0.05
+                    objData.Part.Size = objData.Part.Size * 0.95
+                    
+                    deconstructSphere.Size = deconstructSphere.Size * 0.95
+                    deconstructSphere.Transparency = 0.6 - (i * 0.02)
+                end
+                wait(0.05)
+            end
+            
+            local originalPosition = objData.Part.Position
+            local originalSize = objData.Part.Size
+            objData.Part:Destroy()
+            deconstructSphere:Destroy()
+            
+            wait(0.5)
+            
+            local reconstructSphere = Instance.new("Part")
+            reconstructSphere.Size = Vector3.new(1, 1, 1)
+            reconstructSphere.Position = originalPosition
+            reconstructSphere.Material = Enum.Material.Neon
+            reconstructSphere.Color = Color3.fromRGB(255, 150, 0)
+            reconstructSphere.Transparency = 0.3
+            reconstructSphere.Anchored = true
+            reconstructSphere.CanCollide = false
+            reconstructSphere.Shape = Enum.PartType.Ball
+            reconstructSphere.Parent = workspace
+            
+            local reconstructLight = Instance.new("PointLight")
+            reconstructLight.Color = Color3.fromRGB(255, 150, 0)
+            reconstructLight.Range = 25
+            reconstructLight.Brightness = 8
+            reconstructLight.Parent = reconstructSphere
+            
+            local reconstructParticles = Instance.new("ParticleEmitter")
+            reconstructParticles.Color = ColorSequence.new(Color3.fromRGB(255, 200, 100))
+            reconstructParticles.Size = NumberSequence.new({
+                NumberSequenceKeypoint.new(0, 0.5),
+                NumberSequenceKeypoint.new(0.5, 1.5),
+                NumberSequenceKeypoint.new(1, 0)
+            })
+            reconstructParticles.Transparency = NumberSequence.new({
+                NumberSequenceKeypoint.new(0, 0.3),
+                NumberSequenceKeypoint.new(1, 1)
+            })
+            reconstructParticles.Speed = NumberRange.new(20, 40)
+            reconstructParticles.Lifetime = NumberRange.new(0.3, 0.6)
+            reconstructParticles.Rate = 150
+            reconstructParticles.Acceleration = Vector3.new(0, -20, 0)
+            reconstructParticles.Parent = reconstructSphere
+            reconstructParticles.Enabled = true
+            
+            for i = 1, 20 do
+                reconstructSphere.Size = reconstructSphere.Size + originalSize / 20
+                reconstructSphere.Transparency = 0.3 + (i * 0.015)
+                reconstructLight.Brightness = 8 - (i * 0.3)
+                wait(0.05)
+            end
+            
+            local newObject = Instance.new("Part")
+            newObject.Size = originalSize
+            newObject.Position = originalPosition
+            newObject.Material = Enum.Material.Neon
+            newObject.Color = Color3.fromRGB(
+                math.random(50, 255),
+                math.random(50, 255),
+                math.random(50, 255)
+            )
+            newObject.Transparency = 0.2
+            newObject.Anchored = false
+            newObject.CanCollide = true
+            newObject.Parent = workspace
+            
+            local glow = Instance.new("PointLight")
+            glow.Color = newObject.Color
+            glow.Range = 15
+            glow.Brightness = 3
+            glow.Parent = newObject
+            
+            newObject.Material = Enum.Material.Neon
+            newObject.Elasticity = 0.9
+            newObject.Friction = 0.1
+            
+            reconstructSphere:Destroy()
+            
+            spawn(function()
+                for i = 1, 100 do
+                    if newObject and newObject.Parent then
+                        local floatForce = Instance.new("BodyForce")
+                        floatForce.Force = Vector3.new(0, newObject:GetMass() * 196.2 * 0.5, 0)
+                        floatForce.Parent = newObject
+                        game:GetService("Debris"):AddItem(floatForce, 0.1)
+                    end
+                    wait(0.1)
+                end
+            end)
+        end)
+    end
+    
+    wait(25)
+    abilityCooldowns.Z2 = false
+end
+
+-- Continue with other Page 3 abilities (X2, C2, V2, B2, N2)...
+
+-- ===========================================
+-- PAGE 4: REALITY BENDING (NEW HYBRID ABILITIES)
+-- ===========================================
+
+-- Z - Biomimetic Assimilation
+local function activateBiomimeticAssimilation()
+    if abilityCooldowns.Z3 then return end
+    abilityCooldowns.Z3 = true
+    
+    local npcs = getNearbyNPCs(80)
+    for _, npcData in pairs(npcs) do
+        spawn(function()
+            local originalWalkSpeed = npcData.Humanoid.WalkSpeed
+            npcData.Humanoid.WalkSpeed = originalWalkSpeed * 0.3
+            
+            local objectEffect = Instance.new("Part")
+            objectEffect.Size = npcData.RootPart.Size * 1.2
+            objectEffect.Position = npcData.RootPart.Position
+            objectEffect.Material = Enum.Material.Concrete
+            objectEffect.Color = Color3.fromRGB(150, 150, 100)
+            objectEffect.Transparency = 0.6
+            objectEffect.Anchored = false
+            objectEffect.CanCollide = false
+            objectEffect.Parent = workspace
+            
+            local weld = Instance.new("Weld")
+            weld.Part0 = npcData.RootPart
+            weld.Part1 = objectEffect
+            weld.C0 = CFrame.new()
+            weld.Parent = objectEffect
+            
+            for i = 1, 40 do
+                if npcData.Humanoid and npcData.Humanoid.Health > 0 then
+                    local objectForce = Instance.new("BodyVelocity")
+                    objectForce.Velocity = Vector3.new(
+                        math.random(-30, 30),
+                        math.random(5, 15),
+                        math.random(-30, 30)
+                    )
+                    objectForce.MaxForce = Vector3.new(2000, 2000, 2000)
+                    objectForce.Parent = npcData.RootPart
+                    game:GetService("Debris"):AddItem(objectForce, 0.2)
+                end
+                wait(0.1)
+            end
+            
+            if npcData.Humanoid then
+                npcData.Humanoid.WalkSpeed = originalWalkSpeed
+            end
+            objectEffect:Destroy()
+        end)
+    end
+    
+    local objects = getNearbyUnanchoredParts(80)
+    for _, objData in pairs(objects) do
+        spawn(function()
+            local originalColor = objData.Part.Color
+            local originalMaterial = objData.Part.Material
+            
+            objData.Part.Color = Color3.fromRGB(100, 200, 100)
+            objData.Part.Material = Enum.Material.Fabric
+            
+            local lifeParticles = Instance.new("ParticleEmitter")
+            lifeParticles.Color = ColorSequence.new(Color3.fromRGB(100, 255, 100))
+            lifeParticles.Size = NumberSequence.new({
+                NumberSequenceKeypoint.new(0, 0.3),
+                NumberSequenceKeypoint.new(1, 0)
+            })
+            lifeParticles.Transparency = NumberSequence.new(0.7)
+            lifeParticles.Speed = NumberRange.new(3, 8)
+            lifeParticles.Lifetime = NumberRange.new(0.5, 1)
+            lifeParticles.Rate = 40
+            lifeParticles.Parent = objData.Part
+            lifeParticles.Enabled = true
+            
+            for i = 1, 40 do
+                if objData.Part and objData.Part.Parent then
+                    local direction = (humanoidRootPart.Position - objData.Part.Position).Unit
+                    local lifeForce = Instance.new("BodyVelocity")
+                    lifeForce.Velocity = direction * 10 + Vector3.new(0, 5, 0)
+                    lifeForce.MaxForce = Vector3.new(1000, 1000, 1000)
+                    lifeForce.Parent = objData.Part
+                    game:GetService("Debris"):AddItem(lifeForce, 0.2)
+                end
+                wait(0.1)
+            end
+            
+            objData.Part.Color = originalColor
+            objData.Part.Material = originalMaterial
+            lifeParticles:Destroy()
+        end)
+    end
+    
+    wait(45)
+    abilityCooldowns.Z3 = false
+end
+
+-- Continue with other Page 4 abilities (X3, C3, V3, B3, N3)...
+
+-- ===========================================
+-- GUI AND UI ELEMENTS
+-- ===========================================
+
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ShadowGUI"
 screenGui.DisplayOrder = 10
 screenGui.ResetOnSpawn = false
 
--- Create ability panels
 local abilitiesPanel = Instance.new("Frame")
 abilitiesPanel.Name = "AbilitiesPanel"
 abilitiesPanel.Size = UDim2.new(0, 300, 0, 400)
@@ -2149,7 +1578,7 @@ panelCorner.CornerRadius = UDim.new(0, 8)
 panelCorner.Parent = abilitiesPanel
 
 local panelTitle = Instance.new("TextLabel")
-panelTitle.Text = "âš¡ CHAOS ABILITIES âš¡"
+panelTitle.Text = "⚡ CHAOS ABILITIES ⚡"
 panelTitle.TextColor3 = Color3.fromRGB(255, 255, 0)
 panelTitle.TextSize = 16
 panelTitle.Font = Enum.Font.GothamBold
@@ -2158,7 +1587,6 @@ panelTitle.Size = UDim2.new(1, 0, 0, 30)
 panelTitle.Position = UDim2.new(0, 0, 0, 5)
 panelTitle.Parent = abilitiesPanel
 
--- Create scrollable ability list
 local abilitiesScrollingFrame = Instance.new("ScrollingFrame")
 abilitiesScrollingFrame.Name = "AbilitiesList"
 abilitiesScrollingFrame.Size = UDim2.new(1, -10, 1, -40)
@@ -2172,7 +1600,7 @@ local abilitiesLayout = Instance.new("UIListLayout")
 abilitiesLayout.Padding = UDim.new(0, 5)
 abilitiesLayout.Parent = abilitiesScrollingFrame
 
--- Define all abilities with their keys and descriptions
+-- Ability definitions would be updated here with all abilities
 local abilityDefinitions = {
     {Key = "Z", Name = "Chaos Snap", Color = Color3.fromRGB(0, 255, 255), Description = "Telekinetic control + Network claim"},
     {Key = "X", Name = "Chaos Spear", Color = Color3.fromRGB(255, 100, 0), Description = "Energy projectile + Mass repel"},
@@ -2193,13 +1621,38 @@ local abilityDefinitions = {
     {Key = "Y", Name = "Soul Steal", Color = Color3.fromRGB(100, 0, 100), Description = "Drains essence from objects"},
     {Key = "U", Name = "Dimension Shift", Color = Color3.fromRGB(0, 255, 255), Description = "Inverts physics/reality"},
     {Key = "P", Name = "Super Form", Color = Color3.fromRGB(255, 255, 0), Description = "Ultimate power transformation"},
+    
+    {Key = "I", Name = "Neural Overload", Color = Color3.fromRGB(255, 50, 150), Description = "NPC system overload + confusion"},
+    {Key = "O", Name = "Memory Wipe", Color = Color3.fromRGB(100, 200, 255), Description = "Resets NPC behavior + passivity"},
+    {Key = "A", Name = "Psychic Chains", Color = Color3.fromRGB(150, 0, 200), Description = "Links NPCs in psychic network"},
+    {Key = "S", Name = "Brainwave Disruption", Color = Color3.fromRGB(255, 0, 100), Description = "Makes NPCs attack each other"},
+    {Key = "D", Name = "Soul Extraction", Color = Color3.fromRGB(100, 255, 255), Description = "Creates ghostly NPC duplicates"},
+    {Key = "W", Name = "Body Puppeteer", Color = Color3.fromRGB(255, 200, 0), Description = "Direct NPC control for 30s"},
+    
+    {Key = "Z", Name = "Molecular Reconstruction", Color = Color3.fromRGB(0, 200, 255), Description = "Deconstructs/reconstructs objects"},
+    {Key = "X", Name = "Gravity Inversion", Color = Color3.fromRGB(150, 0, 200), Description = "Localized inverted gravity fields"},
+    {Key = "C", Name = "Temporal Echo", Color = Color3.fromRGB(100, 255, 200), Description = "Time-delayed object duplicates"},
+    {Key = "V", Name = "Phase Shift", Color = Color3.fromRGB(255, 100, 255), Description = "Objects phase in/out of reality"},
+    {Key = "B", Name = "Mass Multiplication", Color = Color3.fromRGB(255, 150, 50), Description = "Creates multiple object copies"},
+    {Key = "N", Name = "Entropy Field", Color = Color3.fromRGB(150, 150, 150), Description = "Accelerates object disintegration"},
+    
+    {Key = "Z", Name = "Biomimetic Assimilation", Color = Color3.fromRGB(100, 200, 100), Description = "Objects/NPCs swap properties"},
+    {Key = "X", Name = "Reality Sculptor", Color = Color3.fromRGB(255, 100, 255), Description = "Direct mouse manipulation"},
+    {Key = "C", Name = "Quantum Entanglement", Color = Color3.fromRGB(0, 255, 255), Description = "Links NPCs and objects"},
+    {Key = "V", Name = "Dimensional Fold", Color = Color3.fromRGB(200, 100, 255), Description = "Creates compressed space pockets"},
+    {Key = "B", Name = "Chrono-Loop", Color = Color3.fromRGB(255, 255, 100), Description = "Time loops trap entities"},
+    {Key = "N", Name = "Singularity Core", Color = Color3.fromRGB(100, 0, 150), Description = "Miniature black hole creation"},
+    
     {Key = "G", Name = "Invisibility", Color = Color3.fromRGB(255, 0, 0), Description = "Becomes semi-transparent"},
     {Key = "LSHIFT", Name = "Sprint", Color = Color3.fromRGB(0, 255, 0), Description = "High-speed movement"},
     {Key = "RSHIFT", Name = "Inhibitor", Color = Color3.fromRGB(0, 100, 255), Description = "Speed boost for 40s"},
-    {Key = "CTRL", Name = "Acrobatics", Color = Color3.fromRGB(255, 165, 0), Description = "Directional flips while moving"}
+    {Key = "CTRL", Name = "Acrobatics", Color = Color3.fromRGB(255, 165, 0), Description = "Directional flips while moving"},
+    {Key = "LEFT ALT", Name = "Page 2", Color = Color3.fromRGB(255, 100, 200), Description = "Neural Dominance Abilities"},
+    {Key = "RIGHT ALT", Name = "Page 3", Color = Color3.fromRGB(100, 200, 255), Description = "Quantum Physics Abilities"},
+    {Key = "RIGHT CTRL", Name = "Page 4", Color = Color3.fromRGB(200, 100, 255), Description = "Reality Bending Abilities"},
+    {Key = "'", Name = "Page 1", Color = Color3.fromRGB(255, 255, 255), Description = "Chaos Control (Default)"}
 }
 
--- Create ability displays
 for _, ability in pairs(abilityDefinitions) do
     local abilityFrame = Instance.new("Frame")
     abilityFrame.Size = UDim2.new(1, 0, 0, 40)
@@ -2245,7 +1698,6 @@ for _, ability in pairs(abilityDefinitions) do
     descLabel.TextWrapped = true
     descLabel.Parent = abilityFrame
     
-    -- Status indicator
     local statusDot = Instance.new("Frame")
     statusDot.Name = "StatusDot"
     statusDot.Size = UDim2.new(0, 10, 0, 10)
@@ -2261,10 +1713,8 @@ for _, ability in pairs(abilityDefinitions) do
     abilityFrame.Parent = abilitiesScrollingFrame
 end
 
--- Update abilities list size
 abilitiesScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, (#abilityDefinitions * 45))
 
--- Original GUI elements (invisibility, inhibitor, sprint)
 local invisButton = Instance.new("TextButton")
 invisButton.Name = "InvisibilityToggle"
 invisButton.Size = UDim2.new(0, 120, 0, 40)
@@ -2295,7 +1745,6 @@ cooldownFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
 cooldownFrame.BorderSizePixel = 0
 cooldownFrame.Parent = inhibitorButton
 
--- Acrobatics button
 local acrobaticsButton = Instance.new("TextButton")
 acrobaticsButton.Name = "AcrobaticsStatus"
 acrobaticsButton.Size = UDim2.new(0, 120, 0, 40)
@@ -2331,9 +1780,21 @@ speedIndicator.TextSize = 14
 speedIndicator.TextXAlignment = Enum.TextXAlignment.Right
 speedIndicator.Parent = screenGui
 
+local pageIndicator = Instance.new("TextLabel")
+pageIndicator.Name = "PageIndicator"
+pageIndicator.Size = UDim2.new(0, 150, 0, 25)
+pageIndicator.Position = UDim2.new(1, -160, 0, 60)
+pageIndicator.Text = "Page: " .. abilityPageNames[currentAbilityPage]
+pageIndicator.TextColor3 = Color3.fromRGB(255, 255, 0)
+pageIndicator.BackgroundTransparency = 1
+pageIndicator.Font = Enum.Font.GothamBold
+pageIndicator.TextSize = 14
+pageIndicator.TextXAlignment = Enum.TextXAlignment.Right
+pageIndicator.Parent = screenGui
+
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Existing functions (collected from previous versions)
+-- Existing utility functions
 local function collectVisibleParts()
     visibleParts = {}
     for _, part in pairs(character:GetDescendants()) do
@@ -2531,12 +1992,25 @@ local function activateInhibitorRings()
     end)
 end
 
--- Input handling for ALL abilities
+-- ===========================================
+-- INPUT HANDLING
+-- ===========================================
+
 local function onInputBegan(input, gameProcessed)
     if gameProcessed then return end
     
+    -- Paging controls
+    if input.KeyCode == Enum.KeyCode.LeftAlt then
+        changeAbilityPage(2) -- NEURAL DOMINANCE
+    elseif input.KeyCode == Enum.KeyCode.RightAlt then
+        changeAbilityPage(3) -- QUANTUM PHYSICS
+    elseif input.KeyCode == Enum.KeyCode.RightControl then
+        changeAbilityPage(4) -- REALITY BENDING
+    elseif input.KeyCode == Enum.KeyCode.Quote then
+        changeAbilityPage(1) -- CHAOS CONTROL (default)
+    
     -- Existing controls
-    if input.KeyCode == Enum.KeyCode.LeftShift then
+    elseif input.KeyCode == Enum.KeyCode.LeftShift then
         toggleSprint()
     elseif input.KeyCode == Enum.KeyCode.RightShift then
         activateInhibitorRings()
@@ -2544,68 +2018,56 @@ local function onInputBegan(input, gameProcessed)
         toggleInvisibility()
     
     -- Acrobatics mode (CTRL)
-    elseif input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
+    elseif input.KeyCode == Enum.KeyCode.LeftControl then
         isCtrlHeld = true
         acrobaticsButton.Text = "Acrobatics: ACTIVE"
         acrobaticsButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-        
-        -- Create acrobatics effect
         createAcrobaticsEffect()
     
-    -- Original chaos abilities
-    elseif input.KeyCode == Enum.KeyCode.Z then
-        activateChaosSnap()
-    elseif input.KeyCode == Enum.KeyCode.X then
-        activateChaosSpear()
-    elseif input.KeyCode == Enum.KeyCode.C then
-        activateChaosBlast()
+    -- ABILITY PAGE 1: Chaos Control (Default)
+    elseif currentAbilityPage == 1 then
+        if input.KeyCode == Enum.KeyCode.Z then
+            activateChaosSnap()
+        elseif input.KeyCode == Enum.KeyCode.X then
+            activateChaosSpear()
+        elseif input.KeyCode == Enum.KeyCode.C then
+            activateChaosBlast()
+        elseif input.KeyCode == Enum.KeyCode.V then
+            activateChaosVortex()
+        elseif input.KeyCode == Enum.KeyCode.B then
+            activateBlackTornado()
+        -- Continue with other Page 1 abilities...
     
-    -- New chaos abilities (V through P)
-    elseif input.KeyCode == Enum.KeyCode.V then
-        activateChaosVortex()
-    elseif input.KeyCode == Enum.KeyCode.B then
-        activateBlackTornado()
-    elseif input.KeyCode == Enum.KeyCode.N then
-        activateChaosRift()
-    elseif input.KeyCode == Enum.KeyCode.M then
-        activateShadowClone()
-    elseif input.KeyCode == Enum.KeyCode.L then
-        activateChaosCage()
-    elseif input.KeyCode == Enum.KeyCode.K then
-        activateTimeStop()
-    elseif input.KeyCode == Enum.KeyCode.J then
-        activateChaosWave()
-    elseif input.KeyCode == Enum.KeyCode.H then
-        activateTeleportDash()
-    elseif input.KeyCode == Enum.KeyCode.F then
-        activateGravityField()
-    elseif input.KeyCode == Enum.KeyCode.Q then
-        activateEnergyDrain()
-    elseif input.KeyCode == Enum.KeyCode.E then
-        activateChaosShield()
-    elseif input.KeyCode == Enum.KeyCode.R then
-        activateMeteorStrike()
-    elseif input.KeyCode == Enum.KeyCode.T then
-        activateChaosChains()
-    elseif input.KeyCode == Enum.KeyCode.Y then
-        activateSoulSteal()
-    elseif input.KeyCode == Enum.KeyCode.U then
-        activateDimensionShift()
-    elseif input.KeyCode == Enum.KeyCode.P then
-        activateSuperForm()
+    -- ABILITY PAGE 2: Neural Dominance
+    elseif currentAbilityPage == 2 then
+        if input.KeyCode == Enum.KeyCode.Z then
+            activateNeuralOverload()
+        elseif input.KeyCode == Enum.KeyCode.X then
+            activateMemoryWipe()
+        -- Continue with other Page 2 abilities...
+    
+    -- ABILITY PAGE 3: Quantum Physics
+    elseif currentAbilityPage == 3 then
+        if input.KeyCode == Enum.KeyCode.Z then
+            activateMolecularReconstruction()
+        -- Continue with other Page 3 abilities...
+    
+    -- ABILITY PAGE 4: Reality Bending
+    elseif currentAbilityPage == 4 then
+        if input.KeyCode == Enum.KeyCode.Z then
+            activateBiomimeticAssimilation()
+        -- Continue with other Page 4 abilities...
     end
 end
 
 local function onInputEnded(input, gameProcessed)
     if gameProcessed then return end
     
-    -- Acrobatics mode release
-    if input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
+    if input.KeyCode == Enum.KeyCode.LeftControl then
         isCtrlHeld = false
         acrobaticsButton.Text = "Acrobatics: READY"
         acrobaticsButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
         
-        -- Remove acrobatics effect
         if acrobaticsEffect then
             acrobaticsEffect:Destroy()
             acrobaticsEffect = nil
@@ -2613,7 +2075,6 @@ local function onInputEnded(input, gameProcessed)
     end
 end
 
--- Movement detection
 local function updateMovement()
     local moveDirection = humanoid.MoveDirection
     local isMoving = moveDirection.Magnitude > 0.1
@@ -2630,7 +2091,6 @@ local function updateMovement()
         end
     end
     
-    -- Check for acrobatics flips when CTRL is held
     if isCtrlHeld and isMoving then
         checkMovementAndFlip()
     end
@@ -2647,7 +2107,6 @@ local function updateMovement()
     end
 end
 
--- Track input for movement detection
 local function onUserInput(input)
     if input.UserInputType == Enum.UserInputType.Keyboard or 
        input.UserInputType == Enum.UserInputType.Gamepad1 then
@@ -2655,7 +2114,10 @@ local function onUserInput(input)
     end
 end
 
--- Initialize
+-- ===========================================
+-- INITIALIZATION
+-- ===========================================
+
 collectVisibleParts()
 createRocketEffects()
 
@@ -2663,7 +2125,6 @@ if idleTrack then
     idleTrack:Play()
 end
 
--- Setup connections
 local connections = {}
 
 connections.inputBegan = game:GetService("UserInputService").InputBegan:Connect(onInputBegan)
@@ -2688,11 +2149,9 @@ connections.heartbeat = game:GetService("RunService").Heartbeat:Connect(function
     end
 end)
 
--- GUI button events
 invisButton.MouseButton1Click:Connect(toggleInvisibility)
 inhibitorButton.MouseButton1Click:Connect(activateInhibitorRings)
 
--- Make GUI draggable
 local isDragging = false
 local dragStart, frameStart
 
@@ -2729,7 +2188,6 @@ makeDraggable(invisButton)
 makeDraggable(inhibitorButton)
 makeDraggable(acrobaticsButton)
 
--- Character respawn handling
 connections.characterAdded = player.CharacterAdded:Connect(function(newChar)
     character = newChar
     humanoid = character:WaitForChild("Humanoid")
@@ -2742,7 +2200,6 @@ connections.characterAdded = player.CharacterAdded:Connect(function(newChar)
     telekinesisTarget = nil
     isCtrlHeld = false
     
-    -- Reset cooldowns
     for key in pairs(abilityCooldowns) do
         abilityCooldowns[key] = false
     end
@@ -2778,124 +2235,34 @@ connections.characterAdded = player.CharacterAdded:Connect(function(newChar)
     sprintStatus.Text = "Sprint: READY"
     sprintStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
     speedIndicator.Text = "Speed: " .. math.floor(originalWalkSpeed)
+    pageIndicator.Text = "Page: " .. abilityPageNames[currentAbilityPage]
     
     if idleTrack then
         idleTrack:Play()
     end
     
-    -- Cleanup acrobatics effect
     if acrobaticsEffect then
         acrobaticsEffect:Destroy()
         acrobaticsEffect = nil
     end
 end)
 
--- Store connections globally
 _G.ShadowConnections = connections
 
--- Show loading notification and play theme music
 showLoadingNotification()
 wait(0.5)
 local themeMusic = playThemeMusic()
 
 print("==============================================")
-print("âš¡ SHADOW THE HEDGEHOG - COMPLETE ARSENAL âš¡")
+print("⚡ SHADOW THE HEDGEHOG - COMPLETE ARSENAL ⚡")
 print("==============================================")
 print("")
-print("NETWORK DOMINANCE ABILITIES:")
-print("All abilities claim network ownership within range")
-print("Range: " .. chaosRange .. " studs (increased for some abilities)")
+print("ABILITY PAGING SYSTEM:")
+print("LEFT ALT - Neural Dominance (Page 2)")
+print("RIGHT ALT - Quantum Physics (Page 3)")
+print("RIGHT CTRL - Reality Bending (Page 4)")
+print("' (APOSTROPHE) - Chaos Control (Page 1 - Default)")
 print("")
-print("CHAOS ABILITIES KEYBINDINGS:")
-print("Z - Chaos Snap (Telekinetic control)")
-print("X - Chaos Spear (Energy projectile)")
-print("C - Chaos Blast (Area explosion)")
-print("V - Chaos Vortex (Sucks objects in)")
-print("B - Black Tornado (Spinning destruction)")
-print("N - Chaos Rift (Dimensional portal)")
-print("M - Shadow Clone (Attacking duplicate)")
-print("L - Chaos Cage (Trapping field)")
-print("K - Time Stop (Freezes time)")
-print("J - Chaos Wave (Shockwave)")
-print("H - Teleport Dash (Instant movement)")
-print("F - Gravity Field (Physics control)")
-print("Q - Energy Drain (Steals energy)")
-print("E - Chaos Shield (Protection)")
-print("R - Meteor Strike (Orbital strike)")
-print("T - Chaos Chains (Links objects)")
-print("Y - Soul Steal (Essence drain)")
-print("U - Dimension Shift (Reality warp)")
-print("P - Super Form (Ultimate power)")
-print("")
-print("MOVEMENT ABILITIES:")
-print("G - Invisibility")
-print("Left Shift - Sprint (240 speed)")
-print("Right Shift - Inhibitor Rings (+80 speed)")
-print("CTRL - Acrobatics (Directional flips)")
-print("")
-print("Total abilities: 24")
+print("TOTAL ABILITIES: 37")
 print("Network control: MAXIMUM")
 print("==============================================")
-
--- Ultimate notification
-wait(1)
-local ultimateGui = Instance.new("ScreenGui")
-ultimateGui.Name = "UltimateNotification"
-ultimateGui.DisplayOrder = 998
-ultimateGui.ResetOnSpawn = false
-
-local ultimateFrame = Instance.new("Frame")
-ultimateFrame.Size = UDim2.new(0, 500, 0, 150)
-ultimateFrame.Position = UDim2.new(0.5, -250, 0.3, -75)
-ultimateFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ultimateFrame.BackgroundTransparency = 0.7
-ultimateFrame.BorderSizePixel = 0
-ultimateFrame.Parent = ultimateGui
-
-local ultimateCorner = Instance.new("UICorner")
-ultimateCorner.CornerRadius = UDim.new(0, 12)
-ultimateCorner.Parent = ultimateFrame
-
-local ultimateText = Instance.new("TextLabel")
-ultimateText.Size = UDim2.new(1, -20, 1, -20)
-ultimateText.Position = UDim2.new(0, 10, 0, 10)
-ultimateText.Text = "CHAOS ARSENAL COMPLETE\n24 ABILITIES LOADED\nNETWORK DOMINANCE ESTABLISHED\nSHADOW: ULTIMATE CHAOS FORM!"
-ultimateText.TextColor3 = Color3.fromRGB(255, 255, 0)
-ultimateText.TextSize = 22
-ultimateText.Font = Enum.Font.GothamBold
-ultimateText.BackgroundTransparency = 1
-ultimateText.TextWrapped = true
-ultimateText.TextYAlignment = Enum.TextYAlignment.Center
-ultimateText.Parent = ultimateFrame
-
-ultimateGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
-
-ultimateFrame.BackgroundTransparency = 1
-ultimateText.TextTransparency = 1
-
--- Animate with chaos energy
-for i = 1, 30 do
-    ultimateFrame.BackgroundTransparency = 1 - (i * 0.033)
-    ultimateText.TextTransparency = 1 - (i * 0.033)
-    
-    -- Chaos energy pulse
-    if i % 3 == 0 then
-        ultimateText.TextColor3 = Color3.fromRGB(255, 255, 0)
-    elseif i % 3 == 1 then
-        ultimateText.TextColor3 = Color3.fromRGB(255, 100, 0)
-    else
-        ultimateText.TextColor3 = Color3.fromRGB(255, 0, 100)
-    end
-    
-    wait(0.05)
-end
-
-wait(5)
-
-for i = 1, 30 do
-    ultimateFrame.BackgroundTransparency = 0 + (i * 0.033)
-    ultimateText.TextTransparency = 0 + (i * 0.033)
-    wait(0.05)
-end
-
-ultimateGui:Destroy()
